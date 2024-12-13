@@ -1,0 +1,6 @@
+{
+    "name": "ethf_notebooks",
+    "workspaces": [
+        "web"
+    ]
+}
