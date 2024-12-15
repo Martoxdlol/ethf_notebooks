@@ -21,8 +21,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return HomeScreen(title: 'ETHF Notebooks');
     } else if (state == AuthState.unauthenticated) {
       if (kIsWeb) {
-        web.window
-            .open('/api/auth/signin/microsoft-entra-id?returnTo=/app', '_self');
+        web.window.open('/api/auth/signin?returnTo=/app', '_self');
       }
 
       return AuthScreen();
