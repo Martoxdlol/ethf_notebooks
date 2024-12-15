@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:universal_html/html.dart' as web;
+import '../exports/web_export.dart' as web;
 
 final uri = Uri.parse('https://notebooks.henryford.edu.ar/login/mobile');
 
@@ -15,10 +15,8 @@ class AuthScreen extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {
             if (kIsWeb) {
-              web.window.open(
-                '/api/auth/signin/microsoft-entra-id?returnTo=/app',
-                '_self',
-              );
+              web.openUrlWeb(
+                  '/api/auth/signin/microsoft-entra-id?returnTo=/app');
             } else {
               launchUrl(uri);
             }

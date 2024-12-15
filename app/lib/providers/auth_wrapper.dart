@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:notebooks_app/screens/auth.dart';
 import 'package:notebooks_app/screens/home.dart';
 import 'package:notebooks_app/services/auth.dart';
-import 'package:universal_html/html.dart' as web;
+import '../exports/web_export.dart' as web;
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -20,7 +20,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return HomeScreen(title: 'ETHF Notebooks');
     } else if (state == AuthState.unauthenticated) {
       if (kIsWeb) {
-        web.window.open('/api/auth/signin?returnTo=/app', '_self');
+        web.openUrlWeb('/api/auth/signin?returnTo=/app');
       }
 
       return AuthScreen();
