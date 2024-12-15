@@ -449,7 +449,7 @@ class CompiledApp {
       _1523: () => globalThis.Promise,
       _1524: f => finalizeWrapper(f, function(x0,x1) { return dartInstance.exports._1524(f,arguments.length,x0,x1) }),
       _1527: x0 => x0.length,
-      _1595: (x0,x1) => x0.open(x1),
+      _1595: (x0,x1,x2) => x0.open(x1,x2),
       _1624: (x0,x1) => x0.querySelector(x1),
       _1625: (x0,x1) => x0.createElement(x1),
       _1626: (x0,x1) => x0.append(x1),

@@ -64941,7 +64941,7 @@ A.B5.prototype={
 K(a){var s=null
 return A.aj7(s,A.Bw(new A.CB(new A.PA(),s,s,s,s,s,s,!1,s,s,A.pt("Ingresar",s),s),s,s),s)}}
 A.PA.prototype={
-$0(){self.window.open($.ap6().j(0))},
+$0(){self.window.open($.ap6().j(0),"_self")},
 $S:0}
 A.tY.prototype={
 ac(){return new A.y1(new A.bq(null,t.A),null,null)}}
@@ -71435,7 +71435,7 @@ q.nX($.afQ())
 return q})
 s($,"aED","ap_",()=>A.arF(null,A.ad("a3<W>")))
 r($,"aEw","ag6",()=>A.asC(B.zk))
-s($,"aER","ap6",()=>A.dq("https://inventario.henryford.edu.ar/login/mobile"))
+s($,"aER","ap6",()=>A.dq("https://notebooks.henryford.edu.ar/login/mobile"))
 s($,"aAf","amn",()=>A.dq("https://notebooks.henryford.edu.ar"))
 s($,"aAe","acC",()=>new A.B4(A.ajy(null,null,!1,A.ad("jz")),B.f5))
 s($,"aEv","ag5",()=>new A.QV($.afV()))
