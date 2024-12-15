@@ -7,7 +7,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     session: {
         strategy: 'jwt',
     },
-    redirectProxyUrl: process.env.NODE_ENV === 'development' ? 'http://localhost:3000/api/auth' : undefined,
     secret: process.env.AUTH_SECRET,
     providers: [MicrosoftEntraID],
 })
