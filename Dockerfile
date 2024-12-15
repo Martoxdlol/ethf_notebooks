@@ -8,6 +8,8 @@ RUN bun install
 
 WORKDIR /app/web
 
+ENV AUTH_TRUST_HOST=true
+
 RUN bun run build
 
 ENTRYPOINT [ "bun", "run", "start" ]
