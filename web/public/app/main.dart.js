@@ -64960,7 +64960,7 @@ o=A.b([A.ahK(p,A.ol(B.Ah,B.j,p),p,o.ga6i(),p,p)],n)
 s=A.pt(q.a.c,A.px(p,p,B.j,p,p,p,p,p,p,p,p,p,p,p,p,p,p,!0,p,p,p,p,p,p,p,p))
 r=q.e
 r===$&&A.a()
-return A.aj7(new A.ri(s,o,4,B.m,B.c3,new A.La(p,p,1/0,56),p),new A.wH(r,A.b([A.pt("Inicio",p),new A.rC(q.f),A.pt("Lista",p)],n),p),new A.Ec(q.d,A.b([A.ae2(A.ol(B.Ag,p,p),"Home"),A.ae2(A.ol(B.Ai,p,p),"Checkout"),A.ae2(A.ol(B.k4,p,p),"Notebooks")],n),q.ga6K(),p))}}
+return A.aj7(new A.ri(s,o,4,B.m,B.c3,new A.La(p,p,1/0,56),p),new A.wH(r,A.b([A.pt("wasm no",p),new A.rC(q.f),A.pt("Lista",p)],n),p),new A.Ec(q.d,A.b([A.ae2(A.ol(B.Ag,p,p),"Home"),A.ae2(A.ol(B.Ai,p,p),"Checkout"),A.ae2(A.ol(B.k4,p,p),"Notebooks")],n),q.ga6K(),p))}}
 A.a7A.prototype={
 $0(){var s=this.a,r=s.e
 r===$&&A.a()

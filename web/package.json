@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "next dev --turbopack",
         "build": "next build",
-        "build_app": "cd ../app && flutter build web --release --base-href /app/ && rm -rf ../web/public/app && mv build/web ../web/public/app",
+        "build_app": "cd ../app && flutter build web --release --wasm --base-href /app/ && rm -rf ../web/public/app && mv build/web ../web/public/app",
         "start": "next start",
         "lint": "next lint"
     },

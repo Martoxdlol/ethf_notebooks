@@ -56,7 +56,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         shadowColor: Colors.black,
       ),
       body: TabBarView(controller: controller, children: [
-        Text("Inicio"),
+        Text(bool.fromEnvironment('dart.tool.dart2wasm')
+            ? 'wasm yes'
+            : 'wasm no'),
         CheckoutView(
           key: checkoutKey,
         ),
