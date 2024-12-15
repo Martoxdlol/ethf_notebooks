@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:notebooks_app/screens/auth.dart';
 import 'package:notebooks_app/screens/home.dart';
 import 'package:notebooks_app/services/auth.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:web/web.dart' as web;
+import 'package:universal_html/html.dart' as web;
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});

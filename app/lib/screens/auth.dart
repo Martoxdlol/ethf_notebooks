@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:web/web.dart' as web;
+import 'package:universal_html/html.dart' as web;
 
 final uri = Uri.parse('https://notebooks.henryford.edu.ar/login/mobile');
 
