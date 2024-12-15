@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:web/web.dart' as web;
 
 final uri = Uri.parse('https://inventario.henryford.edu.ar/login/mobile');
 
@@ -12,7 +14,11 @@ class AuthScreen extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            launchUrl(uri);
+            if (kIsWeb) {
+              web.window.open(uri.toString());
+            } else {
+              launchUrl(uri);
+            }
           },
           child: Text('Ingresar'),
         ),
