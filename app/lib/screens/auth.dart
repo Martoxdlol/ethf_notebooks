@@ -15,7 +15,10 @@ class AuthScreen extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {
             if (kIsWeb) {
-              web.window.open(uri.toString(), '_self');
+              web.window.open(
+                '/api/auth/signin/microsoft-entra-id?returnTo=/app',
+                '_self',
+              );
             } else {
               launchUrl(uri);
             }

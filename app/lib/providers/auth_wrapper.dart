@@ -6,6 +6,7 @@ import 'package:notebooks_app/screens/auth.dart';
 import 'package:notebooks_app/screens/home.dart';
 import 'package:notebooks_app/services/auth.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:web/web.dart' as web;
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -20,9 +21,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
       return HomeScreen(title: 'ETHF Notebooks');
     } else if (state == AuthState.unauthenticated) {
       if (kIsWeb) {
-        launchUrl(
-          Uri.parse('/api/auth/signin/microsoft-entra-id?returnTo=/app'),
-        );
+        web.window
+            .open('/api/auth/signin/microsoft-entra-id?returnTo=/app', '_self');
       }
 
       return AuthScreen();
