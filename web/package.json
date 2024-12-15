@@ -1,33 +1,32 @@
 {
-  "name": "web",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@react-pdf/renderer": "^4.1.5",
-    "jose": "^5.9.6",
-    "next": "15.1.0",
-    "next-auth": "^5.0.0-beta.25",
-    "qrcode": "^1.5.4",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@types/node": "^20",
-    "@types/qrcode": "^1.5.5",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  },
-  "trustedDependencies": [
-    "@biomejs/biome"
-  ]
+    "name": "web",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev --turbopack",
+        "build": "next build",
+        "build_app": "cd ../app && flutter build web --release --base-href /app/ && rm -rf ../web/public/app && mv build/web ../web/public/app",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@react-pdf/renderer": "^4.1.5",
+        "jose": "^5.9.6",
+        "next": "15.1.0",
+        "next-auth": "^5.0.0-beta.25",
+        "qrcode": "^1.5.4",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.9.4",
+        "@types/node": "^20",
+        "@types/qrcode": "^1.5.5",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "postcss": "^8",
+        "tailwindcss": "^3.4.1",
+        "typescript": "^5"
+    },
+    "trustedDependencies": ["@biomejs/biome"]
 }

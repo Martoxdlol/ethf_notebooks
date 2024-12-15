@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -79,6 +80,20 @@ class AuthProvider {
   }
 
   Future<void> update() async {
+    if (kIsWeb) {
+      try {
+        final r = await http.get(Uri.parse('/api/auth/session'));
+        final data = jsonDecode(r.body) as Map<String, dynamic>?;
+        if (data != null && data.containsKey('user')) {
+          _updateState(AuthState.authenticated);
+          return;
+        }
+      } catch (e) {
+        _updateState(AuthState.unauthenticated);
+        return;
+      }
+    }
+
     token = await getToken();
 
     if (token != null) {

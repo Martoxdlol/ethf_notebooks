@@ -7,7 +7,11 @@ export async function GET() {
 
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const assets: Asset[] = hardware.rows.map((h: any) => ({
-        qrSrc: QRCode.toDataURL(h.asset_tag, { errorCorrectionLevel: 'high', margin: 0, rendererOpts: { quality: 1 } }),
+        qrSrc: QRCode.toDataURL(h.asset_tag, {
+            errorCorrectionLevel: 'medium',
+            margin: 0,
+            rendererOpts: { quality: 1 },
+        }),
         tag: h.asset_tag,
         serial: h.serial,
         model: h.model.name,
