@@ -14,7 +14,7 @@ class AuthProvider {
 
   String? token;
 
-  Uri server = Uri.parse('https://notebooks.henryford.edu.ar');
+  static final server = Uri.parse('https://notebooks.henryford.edu.ar');
 
   Future<void> saveToken(String token) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -34,18 +34,16 @@ class AuthProvider {
     await prefs.remove('access_token');
   }
 
-  Future<void> handleCode(String code, Uri? server) async {
+  Future<void> handleCode(String code) async {
     _updateState(AuthState.loading);
 
-    Uri baseUrl = (server ?? this.server);
-
     final url = Uri(
-      scheme: baseUrl.scheme,
-      host: baseUrl.host,
-      port: baseUrl.port,
+      scheme: AuthProvider.server.scheme,
+      host: AuthProvider.server.host,
+      port: AuthProvider.server.port,
       path: '/api/auth/mobile/callback',
       query: 'code=$code',
-      userInfo: baseUrl.userInfo,
+      userInfo: AuthProvider.server.userInfo,
     );
 
     try {

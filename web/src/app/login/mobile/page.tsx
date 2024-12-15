@@ -4,7 +4,7 @@ export default async function Page() {
     const session = await getSession()
 
     if (!session) {
-        return signIn()
+        return signIn('microsoft-entra-id', { redirectTo: '/login/mobile' })
     }
 
     const token = await createAuthorizationCodeToken(session.user)

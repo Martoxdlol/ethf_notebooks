@@ -9,8 +9,8 @@ void main() {
 
   // ignore: unused_local_variable
   final links = LinksProvider(
-    onAuthorizationCodeReceived: (code, server) {
-      AuthProvider.instance.handleCode(code, server);
+    onAuthorizationCodeReceived: (code) {
+      AuthProvider.instance.handleCode(code);
     },
   );
 

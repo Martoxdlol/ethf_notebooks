@@ -1,20 +1,8 @@
 {
     "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
     "files": {
-        "ignore": [
-            "**/.next",
-            "**/public",
-            "**/.turbo",
-            "**/typescript/*.json",
-            "**/tsconfig.json"
-        ],
-        "include": [
-            "**/*.js",
-            "**/*.ts",
-            "**/*.tsx",
-            "**/*.json",
-            "**/*.jsonc"
-        ]
+        "ignore": ["**/.next", "**/public", "**/.turbo", "**/typescript/*.json", "**/tsconfig.json"],
+        "include": ["**/*.js", "**/*.ts", "**/*.tsx", "**/*.json", "**/*.jsonc"]
     },
     "organizeImports": {
         "enabled": true
@@ -45,6 +33,9 @@
     "linter": {
         "enabled": true,
         "rules": {
+            "suspicious": {
+                "noArrayIndexKey": "off"
+            },
             "style": {
                 "noNonNullAssertion": "off"
             }
