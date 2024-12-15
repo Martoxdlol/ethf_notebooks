@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:web/web.dart' as web;
 
-final uri = Uri.parse('https://inventario.henryford.edu.ar/login/mobile');
+final uri = Uri.parse('https://notebooks.henryford.edu.ar/login/mobile');
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -15,7 +15,7 @@ class AuthScreen extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () {
             if (kIsWeb) {
-              web.window.open(uri.toString());
+              web.window.open(uri.toString(), '_self');
             } else {
               launchUrl(uri);
             }
