@@ -6,8 +6,8 @@ export async function GET() {
     const hardware = await fetchInventory('/hardware')
 
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const assets: Asset[] = hardware.rows.map((h: any) => ({
-        qrSrc: QRCode.toDataURL(h.asset_tag, {
+    const assets: Asset[] = hardware.rows.map(async (h: any) => ({
+        qrSrc: await QRCode.toDataURL(h.asset_tag, {
             errorCorrectionLevel: 'medium',
             margin: 0,
             rendererOpts: { quality: 1 },

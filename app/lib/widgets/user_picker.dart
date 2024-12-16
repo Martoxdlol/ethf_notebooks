@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:notebooks_app/services/api.dart';
+import 'package:notebooks_app/widgets/sheet_picker.dart';
 
 class UserPicker extends StatefulWidget {
-  const UserPicker({super.key, this.value, required this.onSelected});
+  const UserPicker({
+    super.key,
+    this.value,
+    required this.onSelected,
+    required this.label,
+  });
 
   final int? value;
-
+  final String label;
   final void Function(User user) onSelected;
 
   @override
@@ -30,17 +36,16 @@ class _UserPickerState extends State<UserPicker> {
   @override
   Widget build(BuildContext context) {
     final entries = users
-        .map<MenuEntry>(
-            (User user) => MenuEntry(label: user.name, value: user.id))
+        .map((User user) => PickerEntry(label: user.name, value: user.id))
         .toList();
 
-    return DropdownMenu<int>(
-      width: double.infinity,
-      initialSelection: entries.isNotEmpty ? entries.first.value : null,
+    return SheetPicker<int>(
+      value: widget.value,
       onSelected: (int? value) {
         widget.onSelected(users.firstWhere((element) => element.id == value));
       },
-      dropdownMenuEntries: entries,
+      entries: entries,
+      decoration: InputDecoration(label: Text(widget.label)),
     );
   }
 }

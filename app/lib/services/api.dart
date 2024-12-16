@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:notebooks_app/models/checkout.dart';
 import 'package:notebooks_app/services/auth.dart';
 
 class User {
@@ -65,6 +66,30 @@ class NotebooksApi {
   Future<List<User>> fetchUsers() async {
     final data = await fetchApi('/users');
     return (data['rows'] as List).map((e) => User.fromJson(e)).toList();
+  }
+
+  Future<CheckoutItemDetails?> fetchDetails(String tag) async {
+    final data = await fetchApi('/assets/$tag');
+
+    if (data['error'] != null) {
+      return null;
+    }
+
+    return CheckoutItemDetails.fromJson(data);
+  }
+
+  Future<void> checkoutItems(
+    List<CheckoutItem> items, {
+    required int responsible,
+    required String? user,
+    required DateTime expected_checkin,
+  }) async {
+    await fetchApi('/checkout', post: true, body: {
+      'assets': items.map((e) => e.tag).toList(),
+      responsible: responsible,
+      user: user,
+      expected_checkin: expected_checkin.toIso8601String(),
+    });
   }
 
   static final instance = NotebooksApi();

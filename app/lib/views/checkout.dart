@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notebooks_app/models/checkout.dart';
 import 'package:notebooks_app/scanner.dart';
-import 'package:notebooks_app/views/confirm-checkout.dart';
+import 'package:notebooks_app/views/confirm_checkout.dart';
 
 class CheckoutView extends StatefulWidget {
   const CheckoutView({super.key});
@@ -66,14 +66,43 @@ class _CheckoutViewState extends State<CheckoutView> {
             itemBuilder: (context, index) {
               final item = items[index];
 
-              return ListTile(
-                title: Text(item.tag),
-                subtitle: Text("Disponible"),
-                leading: CircleAvatar(
-                  child: Icon(Icons.laptop_windows_rounded),
-                ),
-                trailing: Icon(Icons.battery_5_bar),
-              );
+              return FutureBuilder(
+                  future: item.details,
+                  builder: (context, result) {
+                    if (result.connectionState == ConnectionState.waiting) {
+                      return ListTile(
+                        title: Text(item.tag),
+                        leading: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (result.hasError) {
+                      print(result.error);
+
+                      return ListTile(
+                        title: Text(item.tag),
+                        leading: Icon(Icons.error_outline_rounded),
+                      );
+                    }
+
+                    if (result.hasData && result.data == null) {
+                      return ListTile(
+                        title: Text(item.tag),
+                        leading: Icon(Icons.question_mark_rounded),
+                        subtitle: Text('No existe'),
+                      );
+                    }
+
+                    return ListTile(
+                      title: Text(result.data?.tag ?? item.tag),
+                      subtitle:
+                          Text(result.data?.model ?? 'Modelo desconcoido'),
+                      leading: CircleAvatar(
+                        child: Icon(Icons.laptop_windows_rounded),
+                      ),
+                      trailing: Icon(Icons.battery_5_bar),
+                    );
+                  });
             },
           ),
         ),
