@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:notebooks_app/exports/web_export.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:http/http.dart' as http;
@@ -15,7 +16,7 @@ class AuthProvider {
 
   String? token;
 
-  static final server = Uri.parse('https://notebooks.henryford.edu.ar');
+  static final server = Uri.parse('http://192.168.0.113:3000');
 
   Future<void> saveToken(String token) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -104,7 +105,12 @@ class AuthProvider {
   }
 
   Future<void> logout() async {
-    await deleteToken();
+    if (kIsWeb) {
+      openUrlWeb('/api/auth/signout');
+    } else {
+      await deleteToken();
+    }
+
     await update();
   }
 

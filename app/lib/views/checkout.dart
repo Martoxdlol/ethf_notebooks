@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:notebooks_app/models/checkout.dart';
 import 'package:notebooks_app/scanner.dart';
+import 'package:notebooks_app/views/confirm-checkout.dart';
 
 class CheckoutView extends StatefulWidget {
   const CheckoutView({super.key});
+
+  static void triggerCheckout(GlobalKey checkoutKey) {
+    (checkoutKey.currentState as _CheckoutViewState).triggerCheckout();
+  }
 
   @override
   State<CheckoutView> createState() => _CheckoutViewState();
@@ -23,13 +28,26 @@ class _CheckoutViewState extends State<CheckoutView> {
     });
   }
 
+  void triggerCheckout() async {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ConfirmCheckout(
+          items: items,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     GlobalKey scannerKey = GlobalKey();
 
     final screenWidth = MediaQuery.of(context).size.width;
-
-    print(items);
 
     return Column(
       mainAxisSize: MainAxisSize.max,

@@ -35,6 +35,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     controller.animateTo(value);
   }
 
+  void onCheckout() {
+    CheckoutView.triggerCheckout(checkoutKey);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +68,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         Text("Lista"),
       ]),
+      floatingActionButton: index == 1
+          ? FloatingActionButton(
+              onPressed: onCheckout,
+              child: Icon(Icons.check_rounded),
+            )
+          : null,
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: onDestinationSelected,
