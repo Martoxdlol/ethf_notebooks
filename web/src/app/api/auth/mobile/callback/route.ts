@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server'
-import { exchangeAuthorizationCodeForAccessToken } from '~/auth'
+import { exchangeAuthorizationCodeForAccessToken } from '~/lib/auth-helpers'
 
 export async function GET(req: NextRequest) {
     const u = new URL(req.url)
