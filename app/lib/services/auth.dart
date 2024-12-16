@@ -16,7 +16,7 @@ class AuthProvider {
 
   String? token;
 
-  static final server = Uri.parse('http://192.168.0.113:3000');
+  static final server = Uri.parse('https://notebooks.henryford.edu.ar');
 
   Future<void> saveToken(String token) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
