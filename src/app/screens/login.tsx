@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { authClient } from "../../lib/auth-client";
+import { Button } from '@/components/ui/button'
+import { authClient } from '../../lib/auth-client'
 
 export function LoginScreen() {
     return (
-        <div>
-            <Button
-                type='button'
-                onClick={() => authClient.signIn.social({ provider: 'microsoft', })}>Sign in with Microsoft</Button>
+        <div className='flex size-full items-center justify-center'>
+            <Button type='button' onClick={() => authClient.signIn.social({ provider: 'microsoft' })}>
+                Ingresar con Microsoft
+            </Button>
         </div>
     )
 }

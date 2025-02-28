@@ -1,3 +1,4 @@
+import { Layout } from '@/components/layout'
 import { BrowserRouter, Link, Outlet, Route, Routes } from 'react-router'
 import { useSession } from '../lib/auth-client'
 import { HomeScreen } from './screens/home'
@@ -47,7 +48,9 @@ export function AppRouter() {
                 <Route
                     element={
                         <RequiresAuth fallback={<Link to='/login'>Please login</Link>}>
-                            <Outlet />
+                            <Layout>
+                                <Outlet />
+                            </Layout>
                         </RequiresAuth>
                     }
                 >
