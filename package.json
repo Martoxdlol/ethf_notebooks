@@ -1,0 +1,44 @@
+{
+    "name": "m3-app",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "m3-stack dev",
+        "build": "m3-stack build",
+        "auth-generate-schema": "m3-stack auth-generate-schema",
+        "db:push": "m3-stack drizzle-kit push",
+        "start": "m3-stack start",
+        "vercel-build": "m3-stack vercel-build",
+        "m3-stack": "m3-stack"
+    },
+    "dependencies": {
+        "@radix-ui/react-slot": "^1.1.2",
+        "@tanstack/react-query": "^5.66.0",
+        "@trpc/client": "^11.0.0-rc.764",
+        "@trpc/react-query": "^11.0.0-rc.764",
+        "@trpc/server": "^11.0.0-rc.764",
+        "better-auth": "^1.1.17",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "dotenv": "^16.4.7",
+        "drizzle-orm": "^0.39.3",
+        "hono": "^4.7.0",
+        "lucide-react": "^0.477.0",
+        "m3-stack": "^0.25.0",
+        "postgres": "^3.4.5",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "react-router": "^7.1.5",
+        "superjson": "^2.2.2",
+        "tailwind-merge": "^3.0.2",
+        "tailwindcss-animate": "^1.0.7"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.9.4",
+        "@types/react": "^19.0.8",
+        "@types/react-dom": "^19.0.3",
+        "globals": "^15.14.0",
+        "typescript": "~5.7.2"
+    }
+}
