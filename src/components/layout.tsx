@@ -1,7 +1,19 @@
 import { authClient } from '@/lib/auth-client'
-import { CalendarDaysIcon, CheckCheckIcon, HomeIcon, LogInIcon, PlusIcon } from 'lucide-react'
+import { AlertTriangleIcon, CalendarDaysIcon, CheckCheckIcon, HomeIcon, LogInIcon, PlusIcon } from 'lucide-react'
+import { ErrorBoundary } from 'react-error-boundary'
 import { Link, useNavigate } from 'react-router'
 import { Button } from './ui/button'
+
+function ErrorScreen(props: { message: string }) {
+    return (
+        <div className='flex size-full items-center justify-center'>
+            <div className='flex flex-col items-center gap-2 text-center text-xs'>
+                <AlertTriangleIcon />
+                <div>{props.message}</div>
+            </div>
+        </div>
+    )
+}
 
 export function Layout(props: { children: React.ReactNode }) {
     const linkClassName = 'flex size-12 items-center justify-center rounded hover:bg-primary/5'
@@ -17,7 +29,9 @@ export function Layout(props: { children: React.ReactNode }) {
                 </Button>
             </header>
             <div className='flex min-h-0 grow flex-col md:flex-row-reverse'>
-                <main className='flex min-h-0 shrink grow flex-col overflow-y-auto'>{props.children}</main>
+                <main className='relative flex min-h-0 shrink grow flex-col overflow-y-auto overflow-x-hidden'>
+                    <ErrorBoundary fallbackRender={({ error }) => <ErrorScreen message={error.message} />}>{props.children}</ErrorBoundary>
+                </main>
                 <nav className='h-12 shrink-0 border-t md:h-auto md:w-16 md:border-t-0 md:border-r md:p-2'>
                     <ul className='flex items-center justify-around gap-2 md:flex-col md:gap-2'>
                         <li>

@@ -1,9 +1,20 @@
 import { Layout } from '@/components/layout'
-import { BrowserRouter, Link, Outlet, Route, Routes } from 'react-router'
+import { useEffect } from 'react'
+import { BrowserRouter, Link, Outlet, Route, Routes, useNavigate } from 'react-router'
 import { useSession } from '../lib/auth-client'
+import { CheckoutScreen } from './screens/checkout'
 import { HomeScreen } from './screens/home'
 import { LoginScreen } from './screens/login'
-import { SignUpScreen } from './screens/signup'
+
+function Redirect(props: { path: string }) {
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        navigate(props.path, { replace: true })
+    }, [])
+
+    return null
+}
 
 function RequiresAuth(props: { children: React.ReactNode; fallback: React.ReactNode }) {
     const session = useSession()
@@ -20,7 +31,7 @@ function RequiresAuth(props: { children: React.ReactNode; fallback: React.ReactN
         return <>{props.children}</>
     }
 
-    return <>{props.fallback}</>
+    return <Redirect path='/login' />
 }
 
 function RequiresNotAuth(props: { children: React.ReactNode; fallback: React.ReactNode }) {
@@ -38,7 +49,7 @@ function RequiresNotAuth(props: { children: React.ReactNode; fallback: React.Rea
         return <>{props.children}</>
     }
 
-    return <>{props.fallback}</>
+    return <Redirect path='/' />
 }
 
 export function AppRouter() {
@@ -55,6 +66,7 @@ export function AppRouter() {
                     }
                 >
                     <Route path='/' element={<HomeScreen />} />
+                    <Route path='/checkout' element={<CheckoutScreen />} />
                 </Route>
                 <Route
                     element={
@@ -64,7 +76,6 @@ export function AppRouter() {
                     }
                 >
                     <Route path='/login' element={<LoginScreen />} />
-                    <Route path='/signup' element={<SignUpScreen />} />
                 </Route>
             </Routes>
         </BrowserRouter>

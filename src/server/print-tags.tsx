@@ -1,6 +1,6 @@
 import { Document, Image, Link, Page, Text, View, renderToStream } from '@react-pdf/renderer'
 import QRCode from 'qrcode'
-import { fetchInventory } from './inventario'
+import { fetchInventory } from './inventory'
 
 export async function responsePrintTags() {
     const hardware = await fetchInventory('/hardware')

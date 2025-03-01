@@ -1,5 +1,5 @@
-import { createConfig } from 'm3-stack/config'
 import { resolve } from 'node:path'
+import { createConfig } from 'm3-stack/config'
 
 export default createConfig({
     vite: {
@@ -7,6 +7,9 @@ export default createConfig({
             alias: {
                 '@': resolve('./src')
             }
+        },
+        optimizeDeps: {
+            exclude: ['@preflower/barcode-detector-polyfill']
         }
     }
 })
