@@ -20,7 +20,7 @@ RUN bun run build
 FROM base AS run
 
 # Copy the built application
-COPY --from=install /usr/src/app/dist ./dist
+COPY --from=install /usr/src/app/dist .
 
 # Expose the port
 EXPOSE 3999
