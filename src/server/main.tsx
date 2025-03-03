@@ -2,8 +2,8 @@ import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import 'dotenv/config'
 import { readFile } from 'node:fs/promises'
+import { stat } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { cwd } from 'node:process'
 import { Hono } from 'hono'
 import { type Strings, createStrings } from '../lib/strings'
 import { api } from './api'
@@ -27,8 +27,6 @@ process.env.TZ = 'America/Argentina/Buenos_Aires'
 
 export async function main() {
     const publicPath = resolve(new URL(import.meta.url).pathname, '../../public')
-
-    console.log(resolve(cwd().endsWith('dist') ? './public' : './dist/public'))
 
     const indexHtmlContent = await readFile(join(publicPath, 'index.html'), 'utf-8')
     const db = createDatabase()
@@ -54,7 +52,7 @@ export async function main() {
         .use(
             '*',
             serveStatic({
-                root: cwd().endsWith('dist') ? './public' : './dist/public',
+                root: (await stat('./dist').catch(() => null)) ? './dist/public' : './public',
             }),
         )
         .get('*', async (c) => {

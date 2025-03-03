@@ -4,7 +4,7 @@ import { createConfig } from 'm3-stack/config'
 export default createConfig({
     build: {
         bundleDependencies: true,
-        externalDependencies: ['crypto-js']
+        externalDependencies: ['crypto-js', 'pngjs', 'react']
     },
     vite: {
         resolve: {
