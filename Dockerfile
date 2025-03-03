@@ -23,7 +23,7 @@ FROM base AS run
 COPY --from=install /usr/src/app/dist ./dist
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 3999
 
 # Run the application
 CMD ["bun", "run", "start"]
