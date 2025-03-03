@@ -88,10 +88,10 @@ export type Hardware = {
     model: Model
     manufacturer: Manufacturer
     category: Category
-    status_label: StatusLabel
-    assigned_to: AssignedTo
-    last_checkout: DateTime
-    last_checkin: DateTime
+    status_label?: StatusLabel
+    assigned_to?: AssignedTo
+    last_checkout?: DateTime
+    last_checkin?: DateTime
     created_at: DateTime
     updated_at: DateTime
 }
@@ -103,4 +103,39 @@ export type HardwareResponse = {
 
 export function listHardware(): Promise<HardwareResponse> {
     return fetchInventory('/hardware')
+}
+
+export type Group = {
+    id: number
+    name: string
+}
+
+export type User = {
+    id: number
+    email: string
+    avatar: string
+    name: string
+    first_name: string
+    last_name: string
+    username: string
+    groups: {
+        total: number
+        rows: Group[]
+    } | null
+}
+
+export async function getUsers(): Promise<User[]> {
+    return (await fetchInventory('/users?limit=1000')).rows
+}
+
+export async function getUser(email: string): Promise<User | null> {
+    const result = await (fetchInventory(`/users?email=${encodeURIComponent(email)}&limit=1`) as Promise<{ rows: User[] }>)
+
+    return result.rows[0] ?? null
+}
+
+export async function getUserById(id: number): Promise<User | null> {
+    const result = await (fetchInventory(`/users/${id}`) as Promise<User>)
+
+    return result
 }

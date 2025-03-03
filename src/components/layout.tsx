@@ -24,7 +24,7 @@ export function Layout(props: { children: React.ReactNode }) {
         <div className='flex size-full flex-col'>
             <header className='flex h-12 shrink-0 items-center pr-2 pl-4 shadow'>
                 <h1 className='grow text-lg'>Notebooks ETHF</h1>
-                <Button size='icon' variant='ghost' onClick={() => authClient.signOut().then(() => navigate('/login'))}>
+                <Button size='icon' variant='ghost' onClick={() => authClient.signOut().then(() => navigate('/login'))} type='button'>
                     <LogInIcon />
                 </Button>
             </header>

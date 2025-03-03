@@ -3,6 +3,7 @@ import SuperJSON from 'superjson'
 import type { Strings } from '../../lib/strings'
 import type { AuthType } from '../auth'
 import type { DBType } from '../db'
+import { getUser } from '../inventory'
 
 export type TRPCContext = {
     req: Request
@@ -39,12 +40,18 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
         })
     }
 
+    const inventoryUser = await getUser(session.user.email)
+
+    const isAdmin = inventoryUser?.groups?.rows.some((group) => group.name === 'notebooks_app_admin') ?? false
+
     return next({
         ctx: {
             ...ctx,
             session: {
                 ...session,
             },
+            inventoryUser,
+            isAdmin,
         },
     })
 })

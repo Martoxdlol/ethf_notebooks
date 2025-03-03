@@ -1,6 +1,8 @@
+import { RotateCcwIcon, TriangleAlertIcon } from 'lucide-react'
 import { memo, useEffect } from 'react'
 import { BarcodeScanner, type DetectedBarcode } from 'react-barcode-scanner'
 import { ErrorBoundary } from 'react-error-boundary'
+import { Button } from './ui/button'
 
 export const QRScanner = memo(QRScannerNoMemo)
 
@@ -9,12 +11,18 @@ function QRScannerNoMemo(props: {
     height?: string
 }) {
     return (
-        <div style={{ width: props.width ?? '100%', height: props.height ?? '360px' }}>
+        <div style={{ width: props.width ?? '100%', height: props.height ?? '360px', overflow: 'hidden' }}>
             <ErrorBoundary
                 fallbackRender={({ error }) => (
-                    <div className='flex size-full flex-col items-center justify-center border-4 border-red-500'>
-                        <p>Error en el scanner de QR: </p>
-                        <span className='font-mono text-xs'>{error.message}</span>
+                    <div className='relative flex size-full flex-col items-center justify-center gap-4 border-t border-r'>
+                        <p className='text-xs'>Error de scanner</p>
+                        <TriangleAlertIcon color='red' />
+                        <Button size='icon' variant='ghost' onClick={() => window.location.reload()}>
+                            <RotateCcwIcon />
+                        </Button>
+                        <p className='absolute bottom-0 font-mono text-xs opacity-50' onClick={() => alert(error.message)}>
+                            Error: {error.message}
+                        </p>
                     </div>
                 )}
             >

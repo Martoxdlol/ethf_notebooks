@@ -5,6 +5,8 @@ import { useSession } from '../lib/auth-client'
 import { CheckoutScreen } from './screens/checkout'
 import { HomeScreen } from './screens/home'
 import { LoginScreen } from './screens/login'
+import { NewReservationScreen } from './screens/new-reservation'
+import { ReservationScreen } from './screens/reservation'
 
 function Redirect(props: { path: string }) {
     const navigate = useNavigate()
@@ -67,6 +69,8 @@ export function AppRouter() {
                 >
                     <Route path='/' element={<HomeScreen />} />
                     <Route path='/checkout' element={<CheckoutScreen />} />
+                    <Route path='/reservas/nueva' element={<NewReservationScreen />} />
+                    <Route path='/reservas/:reservationId' element={<ReservationScreen />} />
                 </Route>
                 <Route
                     element={
