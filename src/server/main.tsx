@@ -28,6 +28,8 @@ process.env.TZ = 'America/Argentina/Buenos_Aires'
 export async function main() {
     const publicPath = resolve(new URL(import.meta.url).pathname, '../../public')
 
+    console.log(resolve(cwd().endsWith('dist') ? './public' : './dist/public'))
+
     const indexHtmlContent = await readFile(join(publicPath, 'index.html'), 'utf-8')
     const db = createDatabase()
     const auth = createAuth({ db })
