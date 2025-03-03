@@ -1,5 +1,5 @@
 import 'react-barcode-scanner/polyfill'
-import { QRScanner } from '@/components/qr-scanner'
+import { QRScanner, useBarcodeEvent } from '@/components/qr-scanner'
 import { Button } from '@/components/ui/button'
 import { useHardware } from '@/lib/hooks'
 import type { Hardware } from '@/server/inventory'
@@ -48,6 +48,10 @@ export function CheckoutScreen() {
             return asset.asset_tag.includes(keypad) && !selected.has(asset.asset_tag)
         })
     }, [hard, keypad])
+
+    useBarcodeEvent((value) => {
+        addToSelected(value)
+    })
 
     return (
         <div className='flex h-full min-h-0 flex-col'>
