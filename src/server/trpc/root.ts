@@ -1,11 +1,11 @@
 import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 import { schema } from '../db'
-import { getUserById, getUsers, listHardware } from '../inventory'
+import { checkinId, checkoutId, getUserById, getUsers, listHardware } from '../inventory'
 import { protectedProcedure, router } from './trpc'
 
 export const appRouter = router({
-    listAssets: protectedProcedure.query(({ ctx }) => {
+    listAssets: protectedProcedure.query(() => {
         return listHardware()
     }),
 
@@ -63,6 +63,95 @@ export const appRouter = router({
             .from(schema.reservation)
         return reservations
     }),
+
+    checkoutAssets: protectedProcedure
+        .input(
+            z.object({
+                assetTags: z.array(z.string()),
+                inventoryUserId: z.number(),
+                reservationId: z.string().nullable(),
+                from: z
+                    .object({
+                        hours: z.number(),
+                        minutes: z.number(),
+                    })
+                    .nullable(),
+                to: z
+                    .object({
+                        hours: z.number(),
+                        minutes: z.number(),
+                    })
+                    .nullable(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            if (!ctx.isAdmin) {
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED',
+                    message: 'No estas autorizado para realizar esta acción',
+                })
+            }
+
+            const inventory = await listHardware()
+            const assetsByTag = new Map(inventory.rows.map((h) => [h.asset_tag, h]))
+
+            const year = new Date().getFullYear()
+            const month = new Date().getMonth()
+            const day = new Date().getDate()
+
+            const to = new Date(year, month, day, input.to!.hours, input.to!.minutes)
+
+            for (const tag of input.assetTags) {
+                const id = assetsByTag.get(tag)?.id
+
+                if (!id) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: `Notebook con tag ${tag} no encontrado`,
+                    })
+                }
+
+                await checkoutId({
+                    assigned_asset: id,
+                    assigned_user: input.inventoryUserId,
+                    checkout_by: ctx.session.user.name,
+                    checkout_at: new Date(),
+                    expected_checkin: to,
+                    user: ctx.session.user.id,
+                })
+            }
+        }),
+
+    checkinAssets: protectedProcedure
+        .input(
+            z.object({
+                assetTags: z.array(z.string()),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            if (!ctx.isAdmin) {
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED',
+                    message: 'No estas autorizado para realizar esta acción',
+                })
+            }
+
+            const inventory = await listHardware()
+            const assetsByTag = new Map(inventory.rows.map((h) => [h.asset_tag, h]))
+
+            for (const tag of input.assetTags) {
+                const id = assetsByTag.get(tag)?.id
+
+                if (!id) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: `Notebook con tag ${tag} no encontrado`,
+                    })
+                }
+
+                await checkinId(id)
+            }
+        }),
 
     createReservation: protectedProcedure
         .input(

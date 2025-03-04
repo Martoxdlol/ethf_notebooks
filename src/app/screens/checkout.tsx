@@ -1,11 +1,16 @@
 import 'react-barcode-scanner/polyfill'
+import { CheckoutModal } from '@/components/checkout-modal'
 import { QRScanner, useBarcodeEvent } from '@/components/qr-scanner'
 import { Button } from '@/components/ui/button'
+import { api } from '@/lib/api-client'
 import { useHardware } from '@/lib/hooks'
+import { cn } from '@/lib/utils'
 import type { Hardware } from '@/server/inventory'
 import { ArrowDownIcon, ArrowRightIcon, DeleteIcon, Loader2Icon, XIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
+
+const digitRegex = /^[0-9]$/
 
 export function CheckoutScreen() {
     const hard = useHardware()
@@ -47,10 +52,84 @@ export function CheckoutScreen() {
         return Array.from(hard.hardwareByAssetTag.values()).filter((asset) => {
             return asset.asset_tag.includes(keypad) && !selected.has(asset.asset_tag)
         })
-    }, [hard, keypad])
+    }, [hard, keypad, selected])
+
+    const [selectedResult, setSelectedResult] = useState(0)
 
     useBarcodeEvent((value) => {
         addToSelected(value)
+    })
+
+    useEffect(() => {
+        if (selectedResult >= searchResults.length) {
+            setSelectedResult(Math.max(0, searchResults.length - 1))
+        }
+    }, [searchResults])
+
+    useLayoutEffect(() => {
+        const element = document.getElementById(`search-result-${selectedResult}`)
+        if (element) {
+            element.scrollIntoView({
+                block: 'nearest',
+            })
+        }
+    }, [selectedResult])
+
+    useEffect(() => {
+        const controller = new AbortController()
+
+        window.addEventListener(
+            'keydown',
+            (event) => {
+                // detect 1-9, arrow left and right, enter, backspace
+                if (event.key.match(digitRegex)) {
+                    if (event.shiftKey || event.ctrlKey) {
+                        const tag = searchResults[Number.parseInt(event.key)]?.asset_tag
+                        if (tag) {
+                            addToSelected(tag)
+                        }
+                        setKeypad('')
+                    } else {
+                        keypadAppend(event.key)
+                    }
+                    event.preventDefault()
+                } else if (event.key === 'Backspace') {
+                    keypadBackspace()
+                    event.preventDefault()
+                } else if (event.key === 'Enter') {
+                    const tag = searchResults[selectedResult]?.asset_tag
+                    if (tag) {
+                        addToSelected(tag)
+                    }
+                    setKeypad('')
+                    event.preventDefault()
+                } else if (event.key === ' ') {
+                    const tag = searchResults[selectedResult]?.asset_tag
+                    if (tag) {
+                        addToSelected(tag)
+                    }
+                    event.preventDefault()
+                } else if (event.key === 'ArrowLeft') {
+                    setSelectedResult((prev) => Math.max(-1, prev - 1))
+                    event.preventDefault()
+                } else if (event.key === 'ArrowRight') {
+                    setSelectedResult((prev) => Math.min(searchResults.length - 1, prev + 1))
+                    event.preventDefault()
+                }
+            },
+            { signal: controller.signal },
+        )
+
+        return () => {
+            controller.abort()
+        }
+    })
+
+    const { mutateAsync: checkinAssets } = api.checkinAssets.useMutation({
+        onSuccess: () => {
+            setSelected(new Map())
+            hard.refetch()
+        },
     })
 
     return (
@@ -58,24 +137,26 @@ export function CheckoutScreen() {
             <div className='min-h-0 grow overflow-auto'>
                 {hard.isPending && <Loader2Icon className='m-auto mt-10 animate-spin' />}
 
-                {Array.from(selected.values()).map((asset) => (
-                    <div key={asset.id} className='flex gap-4 border-b p-4'>
-                        <p>{asset.asset_tag}</p>
-                        <p className='grow'>{asset.model.name}</p>
-                        <p className='grow'>{asset.assigned_to?.name}</p>
-                        <button
-                            onClick={() => {
-                                setSelected((prev) => {
-                                    const next = new Map(prev)
-                                    next.delete(asset.asset_tag)
-                                    return next
-                                })
-                            }}
-                        >
-                            <DeleteIcon />
-                        </button>
-                    </div>
-                ))}
+                <div className='grid h-fit w-full grid-cols-1 whitespace-nowrap lg:grid-cols-2 xl:grid-cols-3'>
+                    {Array.from(selected.values()).map((asset) => (
+                        <div key={asset.id} className='flex gap-4 border-b p-4'>
+                            <p className='shrink-0'>{asset.asset_tag}</p>
+                            <p className='min-h-0 overflow-hidden text-ellipsis'>{asset.model.name}</p>
+                            <p className='min-h-0 shrink grow overflow-hidden text-ellipsis'>{asset.assigned_to?.name}</p>
+                            <button
+                                onClick={() => {
+                                    setSelected((prev) => {
+                                        const next = new Map(prev)
+                                        next.delete(asset.asset_tag)
+                                        return next
+                                    })
+                                }}
+                            >
+                                <DeleteIcon />
+                            </button>
+                        </div>
+                    ))}
+                </div>
 
                 {selected.size === 0 && !hard.isPending && (
                     <div className='flex size-full h-full flex-col items-center justify-center'>
@@ -85,20 +166,24 @@ export function CheckoutScreen() {
                 )}
             </div>
             <div
-                className='flex h-20 shrink-0 flex-col'
+                className='flex h-18 shrink-0 flex-col'
                 style={{
                     boxShadow: '0 -2px 4px rgba(0, 0, 0, 0.1)',
                 }}
             >
                 {keypad ? (
                     <>
-                        <p className='text-xs'>Buscar: {keypad}</p>
+                        <p className='text-center text-xs'>{keypad}...</p>
                         {searchResults.length === 0 && <p className='text-sm italic'>Sin resultados...</p>}
-                        <div className='flex w-full grow flex-nowrap gap-2 overflow-x-auto p-2'>
-                            {searchResults.map((asset) => (
+                        <div className='flex w-full grow flex-nowrap gap-2 overflow-x-auto p-2 pt-0.5'>
+                            {searchResults.map((asset, i) => (
                                 <button
+                                    id={`search-result-${i}`}
                                     key={asset.id}
-                                    className='h-full shrink-0 rounded-md border px-2 shadow'
+                                    className={cn('h-full shrink-0 rounded-md border px-2 shadow', {
+                                        'outline outline-blue-500': i === selectedResult,
+                                        'focus:outline-none': i !== selectedResult,
+                                    })}
                                     onClick={() => {
                                         addToSelected(asset.asset_tag)
                                         setKeypad('')
@@ -114,20 +199,32 @@ export function CheckoutScreen() {
                         <div className='grow'>
                             <p>{selected.size} Seleccionadas</p>
                             <Link to='/notebooks' className='text-blue-500 underline'>
-                                Ver lista
+                                Ver todas
                             </Link>
                         </div>
                         <div className='flex gap-2'>
                             <button onClick={() => setSelected(new Map())}>
                                 <XIcon />
                             </button>
-                            <Button variant='outline'>
+                            <Button
+                                variant='outline'
+                                disabled={selected.size === 0}
+                                onClick={() => checkinAssets({ assetTags: Array.from(selected.keys()) })}
+                            >
                                 <ArrowDownIcon />
                                 Recibir
                             </Button>
-                            <Button>
-                                Entregar <ArrowRightIcon />
-                            </Button>
+                            <CheckoutModal
+                                assets={Array.from(selected.keys())}
+                                onConfirmed={() => {
+                                    setSelected(new Map())
+                                    hard.refetch()
+                                }}
+                            >
+                                <Button disabled={selected.size === 0}>
+                                    Entregar <ArrowRightIcon />
+                                </Button>
+                            </CheckoutModal>
                         </div>
                     </div>
                 )}

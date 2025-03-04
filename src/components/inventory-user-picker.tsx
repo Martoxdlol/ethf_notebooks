@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 export function InventoryUserPicker(props: {
     onChange: (value: number) => void
     value: number | undefined
+    noDefault?: boolean
 }) {
     const { data, isPending } = api.listUsers.useQuery()
 
@@ -28,7 +29,7 @@ export function InventoryUserPicker(props: {
     return (
         <Select
             disabled={!data?.isAdmin}
-            value={props.value?.toString() ?? data.me.id.toString()}
+            value={(props.value?.toString() ?? props.noDefault) ? undefined : data.me.id.toString()}
             onValueChange={(v) => props.onChange(Number.parseInt(v))}
         >
             <SelectTrigger>

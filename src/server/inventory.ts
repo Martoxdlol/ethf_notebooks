@@ -16,7 +16,7 @@ export function getAssetByTag(tag: string) {
     return fetchInventory(`/hardware/bytag/${tag}`)
 }
 
-export function checkoutTag(opts: {
+export function checkoutId(opts: {
     assigned_user: number
     assigned_asset: number
     expected_checkin: Date
@@ -24,12 +24,16 @@ export function checkoutTag(opts: {
     user?: string
     checkout_by: string
 }) {
-    return fetchInventory(`/hardware/${opts.assigned_asset}/checkin`, 'POST', {
+    return fetchInventory(`/hardware/${opts.assigned_asset}/checkout`, 'POST', {
         ...opts,
         checkout_to_type: 'user',
         assigned_asset: undefined,
         note: `Entregado por ${opts.checkout_by}.${opts.user ? ` Para ${opts.user}.` : ''}`,
     })
+}
+
+export function checkinId(id: number) {
+    return fetchInventory(`/hardware/${id}/checkin`, 'POST')
 }
 
 export type Model = {
