@@ -6,6 +6,7 @@ import { CheckoutScreen } from './screens/checkout'
 import { HomeScreen } from './screens/home'
 import { LoginScreen } from './screens/login'
 import { NewReservationScreen } from './screens/new-reservation'
+import { OptionsScreen } from './screens/options-screen'
 import { ReservationScreen } from './screens/reservation'
 
 function Redirect(props: { path: string }) {
@@ -71,6 +72,16 @@ export function AppRouter() {
                     <Route path='/checkout' element={<CheckoutScreen />} />
                     <Route path='/reservas/nueva' element={<NewReservationScreen />} />
                     <Route path='/reservas/:reservationId' element={<ReservationScreen />} />
+                    <Route path='/opciones' element={<OptionsScreen />} />
+                    <Route path='/lista' element={<>Lista notebooks</>} />
+                    <Route
+                        path='*'
+                        element={
+                            <Link to='/' className='w-full py-10 text-center'>
+                                Inicio
+                            </Link>
+                        }
+                    />
                 </Route>
                 <Route
                     element={

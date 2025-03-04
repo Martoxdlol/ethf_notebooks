@@ -1,5 +1,5 @@
 import { authClient } from '@/lib/auth-client'
-import { AlertTriangleIcon, HomeIcon, LaptopIcon, LogInIcon, PlusIcon, ScanQrCodeIcon } from 'lucide-react'
+import { AlertTriangleIcon, HomeIcon, LaptopIcon, LogInIcon, PlusIcon, QrCodeIcon, SettingsIcon } from 'lucide-react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Link, useNavigate } from 'react-router'
 import { Button } from './ui/button'
@@ -51,7 +51,12 @@ export function Layout(props: { children: React.ReactNode }) {
                         </li>
                         <li>
                             <Link to='/checkout' className={linkClassName}>
-                                <ScanQrCodeIcon />
+                                <QrCodeIcon />
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to='/opciones' className={linkClassName}>
+                                <SettingsIcon />
                             </Link>
                         </li>
                     </ul>
