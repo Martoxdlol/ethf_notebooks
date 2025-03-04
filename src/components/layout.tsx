@@ -1,5 +1,5 @@
 import { authClient } from '@/lib/auth-client'
-import { AlertTriangleIcon, CalendarDaysIcon, CheckCheckIcon, HomeIcon, LogInIcon, PlusIcon } from 'lucide-react'
+import { AlertTriangleIcon, HomeIcon, LaptopIcon, LogInIcon, PlusIcon, ScanQrCodeIcon } from 'lucide-react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Link, useNavigate } from 'react-router'
 import { Button } from './ui/button'
@@ -40,8 +40,8 @@ export function Layout(props: { children: React.ReactNode }) {
                             </Link>
                         </li>
                         <li>
-                            <Link to='/calendario' className={linkClassName}>
-                                <CalendarDaysIcon />
+                            <Link to='/lista' className={linkClassName}>
+                                <LaptopIcon />
                             </Link>
                         </li>
                         <li>
@@ -51,7 +51,7 @@ export function Layout(props: { children: React.ReactNode }) {
                         </li>
                         <li>
                             <Link to='/checkout' className={linkClassName}>
-                                <CheckCheckIcon />
+                                <ScanQrCodeIcon />
                             </Link>
                         </li>
                     </ul>
