@@ -65,10 +65,12 @@ function Options() {
 
 function AvailabilityCalendar() {
     const navigate = useNavigate()
+    const [params] = useSearchParams()
+    const date = params.get('fecha')
 
     return (
         <DatePicker
-            value={undefined}
+            value={dayjs(date).toDate()}
             onChange={(date) => navigate({ pathname: '/disponibilidad', search: `?fecha=${dayjs(date).format('YYYY-MM-DD')}` })}
         >
             <Button size='icon' variant='ghost' type='button'>
