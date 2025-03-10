@@ -272,8 +272,20 @@ export const appRouter = router({
             }),
         )
         .mutation(async ({ ctx, input }) => {
-            const from = new Date(input.date.year, input.date.month - 1, input.date.day, input.from.hours, input.from.minutes)
+            let from = new Date(input.date.year, input.date.month - 1, input.date.day, input.from.hours, input.from.minutes)
             const to = new Date(input.date.year, input.date.month - 1, input.date.day, input.to.hours, input.to.minutes)
+
+            const ONE_HOUR = 60 * 60 * 1000
+            if (from.getTime() < Date.now() - ONE_HOUR) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'No puedes reservar en el pasado',
+                })
+            }
+
+            if (from.getTime() < Date.now() && from.getTime() > Date.now() - ONE_HOUR) {
+                from = new Date()
+            }
 
             if (input.inventoryUserId && !ctx.isAdmin) {
                 throw new TRPCError({

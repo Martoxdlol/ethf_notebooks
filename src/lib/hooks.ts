@@ -13,16 +13,30 @@ export function useHardware() {
         return map
     }, [data])
 
+    const hardwareByReservationId = useMemo(() => {
+        const map = new Map<string, Hardware[]>()
+        for (const h of data?.rows ?? []) {
+            const reservationId = getReservationIdByNotes(h.notes)
+            if (reservationId) {
+                const current = map.get(reservationId) ?? []
+                current.push(h)
+                map.set(reservationId, current)
+            }
+        }
+        return map
+    }, [data])
+
     return {
         hardware: data?.rows ?? [],
         getByTag: (tag: string) => hardwareByAssetTag.get(tag),
         getReservationIdByTag: (tag: string) => {
             const notes = hardwareByAssetTag.get(tag)?.notes
-            if (notes) {
+            if (notes && hardwareByAssetTag.get(tag)?.assigned_to) {
                 return getReservationIdByNotes(notes)
             }
         },
         hardwareByAssetTag,
+        hardwareByReservationId,
         error,
         isPending,
         isFetched,

@@ -1,5 +1,8 @@
 import { api } from '@/lib/api-client'
 import { timeToFactor, timeToValue, times, timestampToTime } from '@/lib/constants'
+import { useHardware } from '@/lib/hooks'
+import { cn } from '@/lib/utils'
+import type { Hardware } from '@/server/inventory'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
 export function HomeScreen() {
@@ -22,6 +25,8 @@ export function HomeScreen() {
         return Array.from(byDay.keys()).sort()
     }, [byDay])
 
+    const hard = useHardware()
+
     return (
         <>
             {daysSorted.map((day) => {
@@ -29,7 +34,7 @@ export function HomeScreen() {
                 return (
                     <section key={day}>
                         <div className='sticky top-0 z-10 flex p-2'>
-                            <h2 className='text-sm font-semibold'>{day}</h2>
+                            <h2 className='font-semibold text-sm'>{day}</h2>
                         </div>
                         <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'>
                             {dayReservations?.map((reservation) => (
@@ -41,6 +46,7 @@ export function HomeScreen() {
                                     place={reservation.place}
                                     start={reservation.from}
                                     end={reservation.to}
+                                    hardware={hard.hardwareByReservationId.get(reservation.id) ?? []}
                                 />
                             ))}
                         </div>
@@ -58,24 +64,38 @@ function ReservationTile(props: {
     place: string
     start: number
     end: number
+    hardware: Hardware[]
 }) {
     const minFactor = timeToFactor(timestampToTime(props.start))
     const maxFactor = timeToFactor(timestampToTime(props.end))
 
     const nowValue = timestampToTime(Date.now())
     const nowFactor = timeToFactor(nowValue)
+
+    const inRange = Date.now() >= props.start && Date.now() <= props.end
+
     return (
         <div className='cursor-pointer p-3 hover:bg-primary/5 active:bg-primary/5'>
             <div className='flex items-center gap-4 p-1 pb-0'>
                 <div className='flex size-12 items-center justify-center rounded-full bg-primary/5 font-mono font-semibold text-lg'>
                     {props.quantity}
                 </div>
-                <div className='pb-1'>
+                <div className='grow pb-1'>
                     <p className='font-semibold'>{props.user}</p>
                     <p className='text-xs opacity-60'>
                         {props.course} - {props.place}
                     </p>
                 </div>
+                {(inRange || props.hardware.length > 0) && (
+                    <div
+                        className={cn('flex flex-col items-center', {
+                            'text-red-500': !inRange,
+                        })}
+                    >
+                        <p className='font-semibold'>{props.hardware.length}</p>
+                        <p className='text-xs'>en uso</p>
+                    </div>
+                )}
             </div>
             <div className='relative rounded-2xl'>
                 <div className='absolute right-0 bottom-0 left-0 h-1 bg-primary/5' />
