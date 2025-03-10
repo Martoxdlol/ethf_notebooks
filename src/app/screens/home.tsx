@@ -1,23 +1,53 @@
 import { api } from '@/lib/api-client'
 import { timeToFactor, timeToValue, times, timestampToTime } from '@/lib/constants'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
 export function HomeScreen() {
     const { data: reservations } = api.listReservations.useQuery()
 
+    const byDay = useMemo(() => {
+        const byDay = new Map<string, typeof reservations>()
+
+        for (const reservation of reservations ?? []) {
+            const date = dayjs(reservation.from).format('YYYY-MM-DD')
+            const dayReservations = byDay.get(date) ?? []
+            dayReservations.push(reservation)
+            byDay.set(date, dayReservations)
+        }
+
+        return byDay
+    }, [reservations])
+
+    const daysSorted = useMemo(() => {
+        return Array.from(byDay.keys()).sort()
+    }, [byDay])
+
     return (
-        <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'>
-            {reservations?.map((reservation) => (
-                <ReservationTile
-                    key={reservation.id}
-                    quantity={reservation.notebooksQuantity}
-                    user={reservation.name}
-                    course={reservation.course}
-                    place={reservation.place}
-                    start={reservation.from}
-                    end={reservation.to}
-                />
-            ))}
-        </div>
+        <>
+            {daysSorted.map((day) => {
+                const dayReservations = byDay.get(day) ?? []
+                return (
+                    <section key={day}>
+                        <div className='sticky top-0 z-10 flex p-2'>
+                            <h2 className='text-sm font-semibold'>{day}</h2>
+                        </div>
+                        <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'>
+                            {dayReservations?.map((reservation) => (
+                                <ReservationTile
+                                    key={reservation.id}
+                                    quantity={reservation.notebooksQuantity}
+                                    user={reservation.name}
+                                    course={reservation.course}
+                                    place={reservation.place}
+                                    start={reservation.from}
+                                    end={reservation.to}
+                                />
+                            ))}
+                        </div>
+                    </section>
+                )
+            })}
+        </>
     )
 }
 
