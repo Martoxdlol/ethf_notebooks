@@ -1,5 +1,7 @@
 import { authClient } from '@/lib/auth-client'
-import { AlertTriangleIcon, HomeIcon, LaptopIcon, LogInIcon, PlusIcon, QrCodeIcon, SettingsIcon } from 'lucide-react'
+import { useIsAdmin } from '@/lib/hooks'
+import { AlertTriangleIcon, HomeIcon, LaptopIcon, Loader2Icon, LogInIcon, PlusIcon, QrCodeIcon, SettingsIcon } from 'lucide-react'
+import { Suspense } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { AvailabilityNavActions, HomeNavActions } from './nav-actions'
@@ -17,11 +19,26 @@ function ErrorScreen(props: { message: string }) {
 }
 
 export function Layout(props: { children: React.ReactNode }) {
+    return (
+        <Suspense
+            fallback={
+                <div className='flex size-full items-center justify-center'>
+                    <Loader2Icon className='animate-spin' />
+                </div>
+            }
+        >
+            <LayoutContent>{props.children}</LayoutContent>
+        </Suspense>
+    )
+}
+function LayoutContent(props: { children: React.ReactNode }) {
     const linkClassName = 'flex size-12 items-center justify-center rounded hover:bg-primary/5'
 
     const navigate = useNavigate()
 
     const pathname = useLocation().pathname
+
+    const isAdmin = useIsAdmin()
 
     return (
         <div className='flex size-full flex-col'>
@@ -44,26 +61,39 @@ export function Layout(props: { children: React.ReactNode }) {
                                 <HomeIcon />
                             </Link>
                         </li>
+                        {!isAdmin && (
+                            <li>
+                                <Link to='/reservas/nueva' className={linkClassName}>
+                                    <PlusIcon />
+                                </Link>
+                            </li>
+                        )}
                         <li>
                             <Link to='/lista' className={linkClassName}>
                                 <LaptopIcon />
                             </Link>
                         </li>
-                        <li>
-                            <Link to='/reservas/nueva' className={linkClassName}>
-                                <PlusIcon />
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to='/checkout' className={linkClassName}>
-                                <QrCodeIcon />
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to='/opciones' className={linkClassName}>
-                                <SettingsIcon />
-                            </Link>
-                        </li>
+                        {isAdmin && (
+                            <li>
+                                <Link to='/reservas/nueva' className={linkClassName}>
+                                    <PlusIcon />
+                                </Link>
+                            </li>
+                        )}
+                        {isAdmin && (
+                            <li>
+                                <Link to='/checkout' className={linkClassName}>
+                                    <QrCodeIcon />
+                                </Link>
+                            </li>
+                        )}
+                        {isAdmin && (
+                            <li>
+                                <Link to='/opciones' className={linkClassName}>
+                                    <SettingsIcon />
+                                </Link>
+                            </li>
+                        )}
                     </ul>
                 </nav>
             </div>

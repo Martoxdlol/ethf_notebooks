@@ -43,3 +43,13 @@ export function useHardware() {
         refetch,
     }
 }
+
+export function useMe() {
+    const [data] = api.me.useSuspenseQuery()
+
+    return data
+}
+
+export function useIsAdmin() {
+    return useMe().isAdmin
+}

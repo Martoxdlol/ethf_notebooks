@@ -9,6 +9,20 @@ import { checkinId, checkoutId, getUserById, getUsers, listHardware } from '../i
 import { protectedProcedure, router } from './trpc'
 
 export const appRouter = router({
+    me: protectedProcedure.query(async ({ ctx }) => {
+        if (!ctx.inventoryUser) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Unauthorized',
+            })
+        }
+
+        return {
+            ...ctx.inventoryUser,
+            isAdmin: ctx.isAdmin,
+        }
+    }),
+
     listAssets: protectedProcedure.query(() => {
         return listHardware()
     }),
@@ -77,7 +91,13 @@ export const appRouter = router({
                     notes: schema.reservation.notes,
                 })
                 .from(schema.reservation)
-                .where(and(gte(schema.reservation.from, from), lte(schema.reservation.from, to)))
+                .where(
+                    and(
+                        gte(schema.reservation.from, from),
+                        lte(schema.reservation.from, to),
+                        ctx.isAdmin ? undefined : eq(schema.reservation.inventoryUserId, ctx.inventoryUser.id),
+                    ),
+                )
 
             return reservations
         }),

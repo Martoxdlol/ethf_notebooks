@@ -99,7 +99,6 @@ function calculateAvailabilityInternal(opts: {
         reservedQuantityByTimeStamp.set(timeStamp, reservedQuantity)
     }
 
-    const maxAvailable = hardware.rows.length - unavailableHardware.size
     const maxReserved = Math.max(0, ...reservedQuantityByTimeStamp.values())
 
     const total = hardware.rows.length

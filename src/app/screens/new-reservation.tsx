@@ -17,6 +17,7 @@ import { Slider } from '@/components/ui/slider'
 import { Textarea } from '@/components/ui/textarea'
 import { api } from '@/lib/api-client'
 import { type Time, decodeTime, encodeTime } from '@/lib/constants'
+import { useIsAdmin } from '@/lib/hooks'
 import { cn } from '@/lib/utils'
 import { Loader2Icon, MinusIcon, PlusIcon } from 'lucide-react'
 import { createId } from 'm3-stack/helpers'
@@ -99,6 +100,8 @@ export function NewReservationScreen() {
 
     const availabilityPassed: boolean = calculateAvailabilityEnabled && !availabilityIsPending && qty <= (availability?.available ?? 0)
 
+    const isAdmin = useIsAdmin()
+
     return (
         <>
             <AlertDialog open={!!error}>
@@ -151,16 +154,17 @@ export function NewReservationScreen() {
                             <Slider value={[qty]} max={100} step={1} onValueChange={(values) => setQtySafe(values[0]!)} />
                         </Card>
                     </section>
-                    <section>
-                        <h2 className='mb-1'>Para quien</h2>
-                        <InventoryUserPicker
-                            onChange={(value) => {
-                                setInventoryUserId(value)
-                            }}
-                            value={inventoryUserId}
-                        />
-                    </section>
-
+                    {isAdmin && (
+                        <section>
+                            <h2 className='mb-1'>Para quien</h2>
+                            <InventoryUserPicker
+                                onChange={(value) => {
+                                    setInventoryUserId(value)
+                                }}
+                                value={inventoryUserId}
+                            />
+                        </section>
+                    )}
                     <section>
                         <h2 className='mb-1'>Curso y lugar</h2>
                         <div className='grid grid-cols-2 gap-2'>
