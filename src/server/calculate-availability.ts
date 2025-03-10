@@ -102,23 +102,16 @@ function calculateAvailabilityInternal(opts: {
     const maxAvailable = hardware.rows.length - unavailableHardware.size
     const maxReserved = Math.max(0, ...reservedQuantityByTimeStamp.values())
 
-    const available = Math.max(maxAvailable - maxReserved, 0)
-    const reserved = Math.min(maxAvailable, 0)
-    const reservable = Math.max(maxAvailable, 0)
     const total = hardware.rows.length
-    let unavailable = unavailableHardware.size
-
-    const diff = total - unavailable - reserved - available
-    if (diff > 0) {
-        unavailable = total - reserved - available
-    }
+    const minusUnavailable = total - unavailableHardware.size
+    const minusReserved = Math.max(minusUnavailable - maxReserved, 0)
 
     return {
-        available,
-        reserved,
-        reservable,
+        available: Math.max(minusReserved, 0),
+        reserved: minusUnavailable - minusReserved,
+        reservable: minusUnavailable,
         total,
-        unavailable,
+        unavailable: unavailableHardware.size,
         unavailableHardware: Array.from(unavailableHardware),
     }
 }

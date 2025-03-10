@@ -34,8 +34,8 @@ export function AvailabilityScreen() {
 
 function AvailabilityRows(props: { date: Date }) {
     const date = {
-        day: props.date.getDay(),
-        month: props.date.getMonth(),
+        day: props.date.getDate(),
+        month: props.date.getMonth() + 1,
         year: props.date.getFullYear(),
     }
     const ranges: { from: Time; to: Time }[] = []
