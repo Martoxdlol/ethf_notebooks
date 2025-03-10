@@ -17,7 +17,8 @@ import { Slider } from '@/components/ui/slider'
 import { Textarea } from '@/components/ui/textarea'
 import { api } from '@/lib/api-client'
 import { type Time, decodeTime, encodeTime } from '@/lib/constants'
-import { MinusIcon, PlusIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Loader2Icon, MinusIcon, PlusIcon } from 'lucide-react'
 import { createId } from 'm3-stack/helpers'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -81,6 +82,22 @@ export function NewReservationScreen() {
             navigate(`/reservas/${r.id}`)
         })
     }
+
+    const calculateAvailabilityEnabled = !!(date && from && to)
+    const { data: availability, isPending: availabilityIsPending } = api.availabilityCheck.useQuery(
+        {
+            date: {
+                year: date?.getFullYear() ?? 0,
+                month: (date?.getMonth() ?? 0) + 1,
+                day: date?.getDate() ?? 0,
+            },
+            from: from!,
+            to: to!,
+        },
+        { enabled: calculateAvailabilityEnabled },
+    )
+
+    const availabilityPassed: boolean = calculateAvailabilityEnabled && !availabilityIsPending && qty <= (availability?.available ?? 0)
 
     return (
         <>
@@ -224,7 +241,32 @@ export function NewReservationScreen() {
                             />
                         </Card>
                     </section>
-                    <Button type='submit' className='h-12 w-full' disabled={!isValid || isPending}>
+                    {availability && (
+                        <Card className='flex flex-col gap-2 p-4'>
+                            <p>
+                                Pedidas{' '}
+                                <span
+                                    className={cn({
+                                        'text-red-500': qty > availability.available,
+                                    })}
+                                >
+                                    {qty}
+                                </span>{' '}
+                                de {availability.available} disponibles
+                            </p>
+
+                            {!availabilityPassed && <p className='text-red-500'>No hay suficientes notebooks disponibles</p>}
+                        </Card>
+                    )}
+
+                    {!availability && calculateAvailabilityEnabled && (
+                        <Card className='flex items-center justify-center gap-2 p-4 opacity-60'>
+                            <Loader2Icon className='mr-2 animate-spin' size={16} />
+                            <span>Calculando disponibilidad...</span>
+                        </Card>
+                    )}
+
+                    <Button type='submit' className='h-12 w-full' disabled={!isValid || isPending || !availabilityPassed}>
                         Confirmar
                     </Button>
                 </div>

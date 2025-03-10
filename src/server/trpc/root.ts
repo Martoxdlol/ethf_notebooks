@@ -1,5 +1,8 @@
 import { TRPCError } from '@trpc/server'
+import { eq } from 'drizzle-orm'
+import { createId } from 'm3-stack/helpers'
 import { z } from 'zod'
+import { calculateAvailability } from '../calculate-availability'
 import { schema } from '../db'
 import { checkinId, checkoutId, getUserById, getUsers, listHardware } from '../inventory'
 import { protectedProcedure, router } from './trpc'
@@ -61,8 +64,38 @@ export const appRouter = router({
                 notes: schema.reservation.notes,
             })
             .from(schema.reservation)
+
         return reservations
     }),
+
+    availabilityCheck: protectedProcedure
+        .input(
+            z.object({
+                date: z.object({
+                    year: z.number(),
+                    month: z.number(),
+                    day: z.number(),
+                }),
+                from: z.object({
+                    hours: z.number(),
+                    minutes: z.number(),
+                }),
+                to: z.object({
+                    hours: z.number(),
+                    minutes: z.number(),
+                }),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+            const from = new Date(input.date.year, input.date.month - 1, input.date.day, input.from.hours, input.from.minutes)
+            const to = new Date(input.date.year, input.date.month - 1, input.date.day, input.to.hours, input.to.minutes)
+
+            return calculateAvailability({
+                db: ctx.db,
+                from: from.getTime(),
+                to: to.getTime(),
+            })
+        }),
 
     checkoutAssets: protectedProcedure
         .input(
@@ -99,7 +132,67 @@ export const appRouter = router({
             const month = new Date().getMonth()
             const day = new Date().getDate()
 
-            const to = new Date(year, month, day, input.to!.hours, input.to!.minutes)
+            let reservationId = ''
+
+            let from: Date
+            let to: Date
+
+            if (input.reservationId) {
+                const reservation = await ctx.db.query.reservation.findFirst({
+                    where: eq(schema.reservation.id, input.reservationId),
+                    columns: {
+                        id: true,
+                        from: true,
+                        to: true,
+                    },
+                })
+
+                if (!reservation) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'Reserva no encontrada',
+                    })
+                }
+
+                reservationId = reservation.id
+                from = new Date(reservation.from)
+                to = new Date(reservation.to)
+            } else {
+                if (!(input.from && input.to)) {
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: 'from y to son requeridos si reservationId no esta presente',
+                    })
+                }
+
+                from = new Date(year, month, day, input.from!.hours, input.from!.minutes)
+                to = new Date(year, month, day, input.to!.hours, input.to!.minutes)
+
+                const user = await getUserById(input.inventoryUserId)
+                if (!user) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'Usuario no encontrado',
+                    })
+                }
+
+                const id = createId()
+                await ctx.db.insert(schema.reservation).values({
+                    course: 'Cualquiera',
+                    place: 'Cualquiera',
+                    from: from.getTime(),
+                    to: to.getTime(),
+                    id,
+                    inventoryUserId: input.inventoryUserId,
+                    inventoryUserName: user.name,
+                    inventoryUserEmail: user.email,
+                    localUserId: ctx.session.user.id,
+                    notebooksQuantity: input.assetTags.length,
+                    idempotencyKey: createId(),
+                })
+
+                reservationId = id
+            }
 
             for (const tag of input.assetTags) {
                 const id = assetsByTag.get(tag)?.id
@@ -118,6 +211,7 @@ export const appRouter = router({
                     checkout_at: new Date(),
                     expected_checkin: to,
                     user: ctx.session.user.id,
+                    reservation_id: reservationId,
                 })
             }
         }),

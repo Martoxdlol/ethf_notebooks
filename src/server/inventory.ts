@@ -16,24 +16,32 @@ export function getAssetByTag(tag: string) {
     return fetchInventory(`/hardware/bytag/${tag}`)
 }
 
-export function checkoutId(opts: {
+export async function checkoutId(opts: {
     assigned_user: number
     assigned_asset: number
     expected_checkin: Date
     checkout_at: Date
     user?: string
     checkout_by: string
+    reservation_id?: string
 }) {
-    return fetchInventory(`/hardware/${opts.assigned_asset}/checkout`, 'POST', {
+    await fetchInventory(`/hardware/${opts.assigned_asset}/checkout`, 'POST', {
         ...opts,
         checkout_to_type: 'user',
         assigned_asset: undefined,
         note: `Entregado por ${opts.checkout_by}.${opts.user ? ` Para ${opts.user}.` : ''}`,
     })
+
+    await fetchInventory(`/hardware/${opts.assigned_asset}`, 'PUT', {
+        notes: opts.reservation_id ? `__reserva:${opts.reservation_id}` : null,
+    })
 }
 
-export function checkinId(id: number) {
-    return fetchInventory(`/hardware/${id}/checkin`, 'POST')
+export async function checkinId(id: number) {
+    await fetchInventory(`/hardware/${id}/checkin`, 'POST')
+    await fetchInventory(`/hardware/${id}`, 'PUT', {
+        notes: null,
+    })
 }
 
 export type Model = {
@@ -72,6 +80,11 @@ export type DateTime = {
     formatted: string
 }
 
+export type OnlyDate = {
+    date: string
+    formatted: string
+}
+
 export type AssignedTo = {
     email: string
     employee_number: string
@@ -88,12 +101,14 @@ export type Hardware = {
     asset_tag: string
     serial: string
     image: string
+    notes: string
     available_actions: AvailableAction
     model: Model
     manufacturer: Manufacturer
     category: Category
     status_label?: StatusLabel
     assigned_to?: AssignedTo
+    expected_checkin?: OnlyDate
     last_checkout?: DateTime
     last_checkin?: DateTime
     created_at: DateTime
@@ -106,7 +121,7 @@ export type HardwareResponse = {
 }
 
 export function listHardware(): Promise<HardwareResponse> {
-    return fetchInventory('/hardware')
+    return fetchInventory(`/hardware?category_id=${process.env.NOTEBOOKS_CATEGORY_ID ?? 2}&limit=1000`)
 }
 
 export type Group = {
@@ -142,4 +157,19 @@ export async function getUserById(id: number): Promise<User | null> {
     const result = await (fetchInventory(`/users/${id}`) as Promise<User>)
 
     return result
+}
+
+const notesRegex = /^__reserva:([\d\w]+)$/
+
+export function getReservationIdByNotes(notes?: string) {
+    if (!notes) {
+        return null
+    }
+
+    const match = notes.match(notesRegex)
+    if (match) {
+        return match[1] ?? null
+    }
+
+    return null
 }

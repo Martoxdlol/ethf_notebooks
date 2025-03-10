@@ -1,4 +1,4 @@
-import type { Hardware } from '@/server/inventory'
+import { type Hardware, getReservationIdByNotes } from '@/server/inventory'
 import { useMemo } from 'react'
 import { api } from './api-client'
 
@@ -16,6 +16,12 @@ export function useHardware() {
     return {
         hardware: data?.rows ?? [],
         getByTag: (tag: string) => hardwareByAssetTag.get(tag),
+        getReservationIdByTag: (tag: string) => {
+            const notes = hardwareByAssetTag.get(tag)?.notes
+            if (notes) {
+                return getReservationIdByNotes(notes)
+            }
+        },
         hardwareByAssetTag,
         error,
         isPending,
