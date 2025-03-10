@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server'
-import { eq } from 'drizzle-orm'
+import dayjs from 'dayjs'
+import { and, eq, gte, lte } from 'drizzle-orm'
 import { createId } from 'm3-stack/helpers'
 import { z } from 'zod'
 import { calculateAvailability } from '../calculate-availability'
@@ -43,30 +44,43 @@ export const appRouter = router({
         }
     }),
 
-    listReservations: protectedProcedure.query(async ({ ctx }) => {
-        if (!ctx.inventoryUser) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Unauthorized',
-            })
-        }
+    listReservations: protectedProcedure
+        .input(
+            z
+                .object({
+                    from: z.number().optional(),
+                    to: z.number().optional(),
+                })
+                .optional(),
+        )
+        .query(async ({ ctx, input }) => {
+            const from = input?.from ?? dayjs().startOf('day').valueOf()
+            const to = input?.to ?? dayjs(from).add(1, 'week').valueOf()
 
-        const reservations = await ctx.db
-            .select({
-                id: schema.reservation.id,
-                from: schema.reservation.from,
-                to: schema.reservation.to,
-                place: schema.reservation.place,
-                course: schema.reservation.course,
-                email: schema.reservation.inventoryUserEmail,
-                name: schema.reservation.inventoryUserName,
-                notebooksQuantity: schema.reservation.notebooksQuantity,
-                notes: schema.reservation.notes,
-            })
-            .from(schema.reservation)
+            if (!ctx.inventoryUser) {
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED',
+                    message: 'Unauthorized',
+                })
+            }
 
-        return reservations
-    }),
+            const reservations = await ctx.db
+                .select({
+                    id: schema.reservation.id,
+                    from: schema.reservation.from,
+                    to: schema.reservation.to,
+                    place: schema.reservation.place,
+                    course: schema.reservation.course,
+                    email: schema.reservation.inventoryUserEmail,
+                    name: schema.reservation.inventoryUserName,
+                    notebooksQuantity: schema.reservation.notebooksQuantity,
+                    notes: schema.reservation.notes,
+                })
+                .from(schema.reservation)
+                .where(and(gte(schema.reservation.from, from), lte(schema.reservation.from, to)))
+
+            return reservations
+        }),
 
     availabilityCheck: protectedProcedure
         .input(

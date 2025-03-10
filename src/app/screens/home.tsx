@@ -5,8 +5,24 @@ import { cn } from '@/lib/utils'
 import type { Hardware } from '@/server/inventory'
 import dayjs from 'dayjs'
 import { useMemo } from 'react'
+
+import 'dayjs/locale/es'
+import { useSearchParams } from 'react-router'
+dayjs.locale('es')
+
 export function HomeScreen() {
-    const { data: reservations } = api.listReservations.useQuery()
+    const [params] = useSearchParams()
+
+    const from = params.get('desde')
+    const to = params.get('hasta')
+
+    const fromAsDate = from ? dayjs(from).toDate() : undefined
+    const toAsDate = to ? dayjs(to).endOf('day').toDate() : undefined
+
+    const { data: reservations } = api.listReservations.useQuery({
+        from: fromAsDate?.getTime(),
+        to: toAsDate?.getTime(),
+    })
 
     const byDay = useMemo(() => {
         const byDay = new Map<string, typeof reservations>()
@@ -31,10 +47,22 @@ export function HomeScreen() {
         <>
             {daysSorted.map((day) => {
                 const dayReservations = byDay.get(day) ?? []
+
+                const date = dayjs(day)
+
+                const isToday = date.isSame(dayjs(), 'day')
+                const isTomorrow = date.isSame(dayjs().add(1, 'day'), 'day')
+                let title = date.format('dddd D [de] MMMM')
+                if (isToday) {
+                    title += ' - HOY'
+                } else if (isTomorrow) {
+                    title += ' - MAÑANA'
+                }
+
                 return (
                     <section key={day}>
                         <div className='sticky top-0 z-10 flex p-2'>
-                            <h2 className='font-semibold text-sm'>{day}</h2>
+                            <h2 className='font-semibold text-sm'>{title}</h2>
                         </div>
                         <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3'>
                             {dayReservations?.map((reservation) => (
