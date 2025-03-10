@@ -2,7 +2,7 @@ import { authClient } from '@/lib/auth-client'
 import { AlertTriangleIcon, HomeIcon, LaptopIcon, LogInIcon, PlusIcon, QrCodeIcon, SettingsIcon } from 'lucide-react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Link, useLocation, useNavigate } from 'react-router'
-import { HomeNavActions } from './home-nav-actions'
+import { AvailabilityNavActions, HomeNavActions } from './nav-actions'
 import { Button } from './ui/button'
 
 function ErrorScreen(props: { message: string }) {
@@ -28,6 +28,7 @@ export function Layout(props: { children: React.ReactNode }) {
             <header className='flex h-12 shrink-0 items-center pr-2 pl-4 shadow'>
                 <h1 className='grow text-lg'>Notebooks ETHF</h1>
                 {pathname === '/' && <HomeNavActions />}
+                {pathname === '/disponibilidad' && <AvailabilityNavActions />}
                 <Button size='icon' variant='ghost' onClick={() => authClient.signOut().then(() => navigate('/login'))} type='button'>
                     <LogInIcon />
                 </Button>

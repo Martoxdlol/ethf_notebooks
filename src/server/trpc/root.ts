@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { and, eq, gte, lte } from 'drizzle-orm'
 import { createId } from 'm3-stack/helpers'
 import { z } from 'zod'
-import { calculateAvailability } from '../calculate-availability'
+import { calculateAvailability, calculateAvailabilityRanges } from '../calculate-availability'
 import { schema } from '../db'
 import { checkinId, checkoutId, getUserById, getUsers, listHardware } from '../inventory'
 import { protectedProcedure, router } from './trpc'
@@ -108,6 +108,41 @@ export const appRouter = router({
                 db: ctx.db,
                 from: from.getTime(),
                 to: to.getTime(),
+            })
+        }),
+
+    availabilityCheckRanges: protectedProcedure
+        .input(
+            z.array(
+                z.object({
+                    date: z.object({
+                        year: z.number(),
+                        month: z.number(),
+                        day: z.number(),
+                    }),
+                    from: z.object({
+                        hours: z.number(),
+                        minutes: z.number(),
+                    }),
+                    to: z.object({
+                        hours: z.number(),
+                        minutes: z.number(),
+                    }),
+                }),
+            ),
+        )
+        .query(async ({ ctx, input }) => {
+            return calculateAvailabilityRanges({
+                db: ctx.db,
+                ranges: input.map((range) => {
+                    const from = new Date(range.date.year, range.date.month - 1, range.date.day, range.from.hours, range.from.minutes)
+                    const to = new Date(range.date.year, range.date.month - 1, range.date.day, range.to.hours, range.to.minutes)
+
+                    return {
+                        from: from.getTime(),
+                        to: to.getTime(),
+                    }
+                }),
             })
         }),
 

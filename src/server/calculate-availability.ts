@@ -1,11 +1,15 @@
-import { and, gt, lt } from 'drizzle-orm'
+import { and, gt, lt, or } from 'drizzle-orm'
 import { type DBTX, schema } from './db'
-import { getReservationIdByNotes, listHardware } from './inventory'
+import { type HardwareResponse, getReservationIdByNotes, listHardware } from './inventory'
 
-export async function calculateAvailability(opts: { db: DBTX; from: number; to: number }) {
+export async function calculateAvailabilityRanges(opts: { db: DBTX; ranges: { from: number; to: number }[] }) {
+    if (opts.ranges.length === 0) {
+        return []
+    }
+
     // Encontrar reservas que estén total o parcialmente dentro del rango de fechas
     const relevantReservations = await opts.db.query.reservation.findMany({
-        where: and(gt(schema.reservation.to, opts.from), lt(schema.reservation.from, opts.to)),
+        where: or(...opts.ranges.map((r) => and(gt(schema.reservation.to, r.from), lt(schema.reservation.from, r.to)))),
         columns: {
             id: true,
             from: true,
@@ -16,6 +20,31 @@ export async function calculateAvailability(opts: { db: DBTX; from: number; to: 
 
     // Información de hardware desde el inventario
     const hardware = await listHardware()
+
+    return opts.ranges.map((range) => ({
+        range,
+        ...calculateAvailabilityInternal({
+            from: range.from,
+            to: range.to,
+            hardware,
+            reservations: relevantReservations,
+        }),
+    }))
+}
+
+export async function calculateAvailability(opts: { db: DBTX; from: number; to: number }) {
+    return (await calculateAvailabilityRanges({ db: opts.db, ranges: [{ from: opts.from, to: opts.to }] }))[0]!
+}
+
+function calculateAvailabilityInternal(opts: {
+    from: number
+    to: number
+    hardware: HardwareResponse
+    reservations: { id: string; from: number; to: number; notebooksQuantity: number }[]
+}) {
+    const { hardware } = opts
+
+    const relevantReservations = opts.reservations.filter((reservation) => reservation.from <= opts.to && reservation.to > opts.from)
 
     // Cantidad de notebooks entregadas por reserva
     const checkedOutByReservation = new Map<string, number>()
@@ -74,11 +103,22 @@ export async function calculateAvailability(opts: { db: DBTX; from: number; to: 
     const maxReserved = Math.max(0, ...reservedQuantityByTimeStamp.values())
 
     const available = Math.max(maxAvailable - maxReserved, 0)
+    const reserved = Math.min(maxAvailable, 0)
+    const reservable = Math.max(maxAvailable, 0)
+    const total = hardware.rows.length
+    let unavailable = unavailableHardware.size
+
+    const diff = total - unavailable - reserved - available
+    if (diff > 0) {
+        unavailable = total - reserved - available
+    }
 
     return {
         available,
-        maxAvailable,
-        maxReserved,
+        reserved,
+        reservable,
+        total,
+        unavailable,
         unavailableHardware: Array.from(unavailableHardware),
     }
 }

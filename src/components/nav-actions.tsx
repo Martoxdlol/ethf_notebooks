@@ -14,6 +14,14 @@ export function HomeNavActions() {
     )
 }
 
+export function AvailabilityNavActions() {
+    return (
+        <>
+            <AvailabilityCalendar />
+        </>
+    )
+}
+
 function Options() {
     const [params, setParams] = useSearchParams()
 

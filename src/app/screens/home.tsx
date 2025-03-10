@@ -9,7 +9,6 @@ import { useMemo } from 'react'
 import 'dayjs/locale/es'
 import { useSearchParams } from 'react-router'
 dayjs.locale('es')
-
 export function HomeScreen() {
     const [params] = useSearchParams()
 
