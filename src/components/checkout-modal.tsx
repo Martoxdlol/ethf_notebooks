@@ -3,6 +3,7 @@ import { type Time, decodeTime, encodeTime } from '@/lib/constants'
 import { useState } from 'react'
 import { DiscreteTimeSelect } from './discrete-time-select'
 import { InventoryUserPicker } from './inventory-user-picker'
+import { ReservationPicker } from './reservation-picker'
 import { Button } from './ui/button'
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/drawer'
 
@@ -10,10 +11,11 @@ export function CheckoutModal(props: { children: React.ReactNode; assets: string
     const [userId, setUserId] = useState<number>()
     const [from, setFrom] = useState<Time>()
     const [to, setTo] = useState<Time>()
+    const [reservationId, setReservationId] = useState<string>()
 
     const { mutateAsync: checkout } = api.checkoutAssets.useMutation()
 
-    const isValid = userId && from && to
+    const isValid = (userId && from && to) || reservationId
 
     function handleConfirm() {
         if (!(userId && from && to)) {
@@ -23,9 +25,9 @@ export function CheckoutModal(props: { children: React.ReactNode; assets: string
         checkout({
             inventoryUserId: userId,
             assetTags: props.assets,
-            reservationId: null,
-            from,
-            to,
+            reservationId: reservationId ?? null,
+            from: from ?? null,
+            to: to ?? null,
         }).then(() => {
             document.getElementById('close-drawer')?.click()
             props.onConfirmed()
@@ -42,24 +44,36 @@ export function CheckoutModal(props: { children: React.ReactNode; assets: string
                 </DrawerHeader>
                 <div className='flex flex-col gap-2 px-4'>
                     <InventoryUserPicker onChange={setUserId} value={userId} noDefault={true} />
-                    <div className='flex items-center gap-2'>
-                        <DiscreteTimeSelect
-                            onChange={(value) => {
-                                setFrom(value ? decodeTime(value) : undefined)
-                            }}
-                            value={from ? encodeTime(from) : undefined}
-                            placeholder='Desde'
-                            maxExclusive={to ? encodeTime(to) : undefined}
-                        />
-                        <DiscreteTimeSelect
-                            minInclusive={from ? encodeTime(from) : undefined}
-                            onChange={(value) => {
-                                setTo(value ? decodeTime(value) : undefined)
-                            }}
-                            value={to ? encodeTime(to) : undefined}
-                            placeholder='Hasta'
-                        />
-                    </div>
+                    <ReservationPicker
+                        onChange={(value) => {
+                            setReservationId(value)
+                        }}
+                        value={reservationId}
+                        inventoryUserId={userId}
+                    />
+                    {!reservationId && (
+                        <>
+                            <p className='font-semibold text-xs'>Nueva reserva (o elegir una existente ⬆️)</p>
+                            <div className='flex items-center gap-2'>
+                                <DiscreteTimeSelect
+                                    onChange={(value) => {
+                                        setFrom(value ? decodeTime(value) : undefined)
+                                    }}
+                                    value={from ? encodeTime(from) : undefined}
+                                    placeholder='Desde'
+                                    maxExclusive={to ? encodeTime(to) : undefined}
+                                />
+                                <DiscreteTimeSelect
+                                    minInclusive={from ? encodeTime(from) : undefined}
+                                    onChange={(value) => {
+                                        setTo(value ? decodeTime(value) : undefined)
+                                    }}
+                                    value={to ? encodeTime(to) : undefined}
+                                    placeholder='Hasta'
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
                 <DrawerFooter>
                     <Button onClick={handleConfirm} disabled={!isValid}>

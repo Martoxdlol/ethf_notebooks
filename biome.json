@@ -68,7 +68,8 @@
             "complexity": {
                 "noUselessTernary": "error",
                 "noVoid": "off",
-                "noExcessiveCognitiveComplexity": "off"
+                "noExcessiveCognitiveComplexity": "off",
+                "useSimplifiedLogicExpression": "off"
             },
             "performance": {
                 "noReExportAll": "off",

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import dayjs from 'dayjs'
-import { and, eq, gte, lte } from 'drizzle-orm'
+import { and, eq, gt, gte, lte } from 'drizzle-orm'
 import { createId } from 'm3-stack/helpers'
 import { z } from 'zod'
 import { calculateAvailability, calculateAvailabilityRanges } from '../calculate-availability'
@@ -64,6 +64,7 @@ export const appRouter = router({
                 .object({
                     from: z.number().optional(),
                     to: z.number().optional(),
+                    inventoryUserId: z.number().optional(),
                 })
                 .optional(),
         )
@@ -96,6 +97,7 @@ export const appRouter = router({
                         gte(schema.reservation.from, from),
                         lte(schema.reservation.from, to),
                         ctx.isAdmin ? undefined : eq(schema.reservation.inventoryUserId, ctx.inventoryUser.id),
+                        input?.inventoryUserId ? eq(schema.reservation.inventoryUserId, input.inventoryUserId) : undefined,
                     ),
                 )
 
@@ -170,7 +172,7 @@ export const appRouter = router({
         .input(
             z.object({
                 assetTags: z.array(z.string()),
-                inventoryUserId: z.number(),
+                inventoryUserId: z.number().optional(),
                 reservationId: z.string().nullable(),
                 from: z
                     .object({
@@ -202,6 +204,7 @@ export const appRouter = router({
             const day = new Date().getDate()
 
             let reservationId = ''
+            let inventoryUserId = -1
 
             let from: Date
             let to: Date
@@ -213,6 +216,7 @@ export const appRouter = router({
                         id: true,
                         from: true,
                         to: true,
+                        inventoryUserId: true,
                     },
                 })
 
@@ -224,10 +228,11 @@ export const appRouter = router({
                 }
 
                 reservationId = reservation.id
+                inventoryUserId = reservation.inventoryUserId
                 from = new Date(reservation.from)
                 to = new Date(reservation.to)
             } else {
-                if (!(input.from && input.to)) {
+                if (!(input.from && input.to && input.inventoryUserId)) {
                     throw new TRPCError({
                         code: 'BAD_REQUEST',
                         message: 'from y to son requeridos si reservationId no esta presente',
@@ -238,6 +243,8 @@ export const appRouter = router({
                 to = new Date(year, month, day, input.to!.hours, input.to!.minutes)
 
                 const user = await getUserById(input.inventoryUserId)
+                inventoryUserId = input.inventoryUserId
+
                 if (!user) {
                     throw new TRPCError({
                         code: 'NOT_FOUND',
@@ -275,7 +282,7 @@ export const appRouter = router({
 
                 await checkoutId({
                     assigned_asset: id,
-                    assigned_user: input.inventoryUserId,
+                    assigned_user: inventoryUserId,
                     checkout_by: ctx.session.user.name,
                     checkout_at: new Date(),
                     expected_checkin: to,
@@ -402,6 +409,51 @@ export const appRouter = router({
 
             return r[0]!
         }),
+
+    getReservation: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+        const reservation = await ctx.db.query.reservation.findFirst({
+            where: and(
+                eq(schema.reservation.id, input),
+                ctx.isAdmin ? undefined : eq(schema.reservation.inventoryUserId, ctx.inventoryUser!.id),
+            ),
+        })
+
+        if (!reservation) {
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: 'Reserva no encontrada',
+            })
+        }
+
+        return reservation
+    }),
+
+    deleteReservation: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
+        if (!ctx.isAdmin) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'No estas autorizado para realizar esta acción',
+            })
+        }
+
+        const r = await ctx.db
+            .delete(schema.reservation)
+            .where(
+                and(
+                    eq(schema.reservation.id, input),
+                    ctx.isAdmin ? undefined : eq(schema.reservation.inventoryUserId, ctx.inventoryUser!.id),
+                    gt(
+                        schema.reservation.from,
+                        Date.now() +
+                            // 1 hour
+                            60 * 60 * 1000,
+                    ),
+                ),
+            )
+            .returning()
+
+        return r.length > 0
+    }),
 })
 
 export type AppRouter = typeof appRouter

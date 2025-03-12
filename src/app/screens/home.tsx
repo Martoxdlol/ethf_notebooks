@@ -1,5 +1,5 @@
 import { api } from '@/lib/api-client'
-import { timeToFactor, timeToValue, times, timestampToTime } from '@/lib/constants'
+import {} from '@/lib/constants'
 import { useHardware } from '@/lib/hooks'
 import { cn } from '@/lib/utils'
 import type { Hardware } from '@/server/inventory'
@@ -7,7 +7,8 @@ import dayjs from 'dayjs'
 import { useMemo } from 'react'
 
 import 'dayjs/locale/es'
-import { useSearchParams } from 'react-router'
+import { ReservationProgressBar } from '@/components/reservation-progress-bar'
+import { Link, useSearchParams } from 'react-router'
 dayjs.locale('es')
 export function HomeScreen() {
     const [params] = useSearchParams()
@@ -67,6 +68,7 @@ export function HomeScreen() {
                             {dayReservations?.map((reservation) => (
                                 <ReservationTile
                                     key={reservation.id}
+                                    id={reservation.id}
                                     quantity={reservation.notebooksQuantity}
                                     user={reservation.name}
                                     course={reservation.course}
@@ -85,6 +87,7 @@ export function HomeScreen() {
 }
 
 function ReservationTile(props: {
+    id: string
     quantity: number
     user: string
     course: string
@@ -93,16 +96,10 @@ function ReservationTile(props: {
     end: number
     hardware: Hardware[]
 }) {
-    const minFactor = timeToFactor(timestampToTime(props.start))
-    const maxFactor = timeToFactor(timestampToTime(props.end))
-
-    const nowValue = timestampToTime(Date.now())
-    const nowFactor = timeToFactor(nowValue)
-
     const inRange = Date.now() >= props.start && Date.now() <= props.end
 
     return (
-        <div className='cursor-pointer p-3 hover:bg-primary/5 active:bg-primary/5'>
+        <Link className='block cursor-pointer p-3 hover:bg-primary/5 active:bg-primary/5' to={`/reservas/${props.id}`}>
             <div className='flex items-center gap-4 p-1 pb-0'>
                 <div className='flex size-12 items-center justify-center rounded-full bg-primary/5 font-mono font-semibold text-lg'>
                     {props.quantity}
@@ -124,39 +121,7 @@ function ReservationTile(props: {
                     </div>
                 )}
             </div>
-            <div className='relative rounded-2xl'>
-                <div className='absolute right-0 bottom-0 left-0 h-1 bg-primary/5' />
-                {times.map((time) => {
-                    const factor = timeToFactor(time)
-
-                    if (factor === 0 || factor === 1 || factor === minFactor || factor === maxFactor) {
-                        return null
-                    }
-
-                    return (
-                        <div
-                            key={timeToValue(time)}
-                            style={{ marginLeft: `${factor * 100}%` }}
-                            className='transform-[translateX(-50%)] absolute bottom-0 left-0 h-1 w-0.5 bg-blue-300'
-                        />
-                    )
-                })}
-
-                {nowFactor >= 0 && nowFactor <= 1 && (
-                    <div className='absolute bottom-0 left-0 h-3 w-0.5 bg-red-500' style={{ marginLeft: `${nowFactor * 100}%` }} />
-                )}
-
-                <div
-                    className='flex justify-between border-blue-500 border-b-4 text-primary/60 text-xs'
-                    style={{
-                        marginLeft: `${minFactor * 100}%`,
-                        width: `${(maxFactor - minFactor) * 100}%`,
-                    }}
-                >
-                    <p>{dayjs(props.start).format('HH:mm')}</p>
-                    <p>{dayjs(props.end).format('HH:mm')}</p>
-                </div>
-            </div>
-        </div>
+            <ReservationProgressBar start={props.start} end={props.end} />
+        </Link>
     )
 }

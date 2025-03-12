@@ -5,6 +5,7 @@ import { useSession } from '../lib/auth-client'
 import { AvailabilityScreen } from './screens/availability'
 import { CheckoutScreen } from './screens/checkout'
 import { HomeScreen } from './screens/home'
+import { ListScreen } from './screens/list'
 import { LoginScreen } from './screens/login'
 import { NewReservationScreen } from './screens/new-reservation'
 import { OptionsScreen } from './screens/options-screen'
@@ -74,7 +75,7 @@ export function AppRouter() {
                     <Route path='/reservas/nueva' element={<NewReservationScreen />} />
                     <Route path='/reservas/:reservationId' element={<ReservationScreen />} />
                     <Route path='/opciones' element={<OptionsScreen />} />
-                    <Route path='/lista' element={<>Lista notebooks</>} />
+                    <Route path='/lista' element={<ListScreen />} />
                     <Route path='/disponibilidad' element={<AvailabilityScreen />} />
                     <Route
                         path='*'
