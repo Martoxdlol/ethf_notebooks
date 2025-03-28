@@ -17,7 +17,7 @@ export function createAuth(opts?: { db: DBType }) {
             },
         },
         baseURL: process.env.BASE_URL || 'http://localhost:5173',
-        trustedOrigins: [BASE_URL, 'http://192.168.68.54:5173'],
+        trustedOrigins: [BASE_URL, 'http://10.0.90.2:5173'],
     })
 }
 

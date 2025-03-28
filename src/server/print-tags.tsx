@@ -9,14 +9,14 @@ export async function responsePrintTags() {
         hardware.rows.map(
             async (h) =>
                 ({
-                    qrSrc: await QRCode.toDataURL(h.asset_tag, {
+                    qrSrc: await QRCode.toDataURL(h.asset_tag.trim(), {
                         errorCorrectionLevel: 'medium',
                         margin: 0,
                         rendererOpts: { quality: 1 },
                     }),
-                    model: h.model.name,
-                    serial: h.serial,
-                    tag: h.asset_tag,
+                    model: h.model.name?.trim(),
+                    serial: h.serial?.trim(),
+                    tag: h.asset_tag?.trim(),
                 }) satisfies Asset,
         ),
     )
@@ -52,8 +52,8 @@ function AssetSection(props: Asset & { xIndex: number; yIndex: number }) {
             }}
         >
             <View style={{ padding: '4mm', position: 'relative', flexDirection: 'row', gap: '5mm' }}>
-                <Image src={props.qrSrc} style={{ width: '45mm', height: '45mm' }} />
-                <View>
+                <Image src={props.qrSrc} style={{ width: '45mm', height: '45mm', flexShrink: 0 }} />
+                <View style={{ flexShrink: 1 }}>
                     <Text style={{ fontSize: '4mm' }}>Nombre</Text>
                     <Text style={{ fontSize: '6mm' }}>{props.tag}</Text>
                     <Text style={{ marginTop: '1mm', fontSize: '4mm' }}>Serial</Text>

@@ -9,7 +9,11 @@ export function ListScreen() {
     return (
         <div className='grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3'>
             {hard.hardware.map((hardware) => {
-                const reservationId = hard.getReservationIdByTag(hardware.asset_tag)
+                let reservationId = hard.getReservationIdByTag(hardware.asset_tag)
+
+                if (!hardware.expected_checkin) {
+                    reservationId = null
+                }
 
                 return (
                     <div key={hardware.id}>

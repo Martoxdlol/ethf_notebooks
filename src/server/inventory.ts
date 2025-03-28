@@ -105,6 +105,7 @@ export type Hardware = {
     available_actions: AvailableAction
     model: Model
     manufacturer: Manufacturer
+    requestable?: boolean
     category: Category
     status_label?: StatusLabel
     assigned_to?: AssignedTo

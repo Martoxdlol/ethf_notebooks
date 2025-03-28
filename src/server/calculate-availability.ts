@@ -50,6 +50,12 @@ function calculateAvailabilityInternal(opts: {
     const checkedOutByReservation = new Map<string, number>()
     const unavailableHardware = new Set<string>()
 
+    for (const h of hardware.rows) {
+        if (!h.requestable) {
+            unavailableHardware.add(h.asset_tag)
+        }
+    }
+
     // Calcular `checkedOutByReservation`
     for (const hard of hardware.rows) {
         if (!hard.assigned_to) {
@@ -58,7 +64,7 @@ function calculateAvailabilityInternal(opts: {
 
         const reservationId = getReservationIdByNotes(hard.notes)
 
-        if (reservationId) {
+        if (reservationId && hard.expected_checkin) {
             // Se encontró una reserva asociada al hardware
             checkedOutByReservation.set(reservationId, (checkedOutByReservation.get(reservationId) ?? 0) + 1)
         } else {
