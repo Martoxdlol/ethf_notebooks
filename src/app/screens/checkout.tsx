@@ -10,7 +10,7 @@ import { ArrowDownIcon, ArrowRightIcon, DeleteIcon, Loader2Icon, XIcon } from 'l
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
 
-const digitRegex = /^[0-9]$/
+const digitRegex = /^[0-9\-]$/
 
 export function CheckoutScreen() {
     const hard = useHardware()
@@ -50,7 +50,7 @@ export function CheckoutScreen() {
         }
 
         return Array.from(hard.hardwareByAssetTag.values()).filter((asset) => {
-            return asset.asset_tag.includes(keypad) && !selected.has(asset.asset_tag)
+            return (asset.asset_tag.includes(keypad) || asset.asset_tag.replace(/\-/gi, '').includes(keypad)) && !selected.has(asset.asset_tag)
         })
     }, [hard, keypad, selected])
 
@@ -166,7 +166,7 @@ export function CheckoutScreen() {
                 )}
             </div>
             <div
-                className='flex h-18 shrink-0 flex-col'
+                className='flex h-18 shrink-0 flex-col relative'
                 style={{
                     boxShadow: '0 -2px 4px rgba(0, 0, 0, 0.1)',
                 }}
@@ -193,6 +193,9 @@ export function CheckoutScreen() {
                                 </button>
                             ))}
                         </div>
+                        <button className='absolute right-1 top-0 bottom-0 z-10' onClick={keypadClear}>
+                            <XIcon />
+                        </button>
                     </>
                 ) : (
                     <div className='flex size-full items-center gap-2 px-2'>
@@ -238,8 +241,8 @@ export function CheckoutScreen() {
                                 {i + 1}
                             </button>
                         ))}
-                        <button onClick={keypadClear}>
-                            <XIcon />
+                        <button onClick={() => keypadAppend('-')}>
+                            -
                         </button>
                         <button onClick={() => keypadAppend('0')}>0</button>
                         <button onClick={keypadBackspace}>
