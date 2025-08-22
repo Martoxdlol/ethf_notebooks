@@ -1,6 +1,11 @@
-import { timeToFactor, timeToValue, times, timestampToTime } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 import dayjs from 'dayjs'
+import {
+    times,
+    timestampToTime,
+    timeToFactor,
+    timeToValue,
+} from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 export function ReservationProgressBar(props: {
     start: number
@@ -25,7 +30,12 @@ export function ReservationProgressBar(props: {
             {times.map((time) => {
                 const factor = timeToFactor(time)
 
-                if (factor === 0 || factor === 1 || factor === minFactor || factor === maxFactor) {
+                if (
+                    factor === 0 ||
+                    factor === 1 ||
+                    factor === minFactor ||
+                    factor === maxFactor
+                ) {
                     return null
                 }
 
@@ -33,22 +43,35 @@ export function ReservationProgressBar(props: {
                     <div
                         key={timeToValue(time)}
                         style={{ marginLeft: `${factor * 100}%` }}
-                        className={cn('transform-[translateX(-50%)] absolute bottom-0 left-0 h-1 w-0.5 bg-blue-300', {
-                            'bg-transparent': !inRange && props.withNotebooks,
-                        })}
+                        className={cn(
+                            'transform-[translateX(-50%)] absolute bottom-0 left-0 h-1 w-0.5 bg-blue-300',
+                            {
+                                'bg-transparent':
+                                    !inRange && props.withNotebooks,
+                            },
+                        )}
                     />
                 )
             })}
 
             {nowFactor >= 0 && nowFactor <= 1 && isToday && (
-                <div className='absolute bottom-0 left-0 h-3 w-0.5 bg-red-500' style={{ marginLeft: `${nowFactor * 100}%` }} />
+                <div
+                    className='absolute bottom-0 left-0 h-3 w-0.5 bg-red-500'
+                    style={{ marginLeft: `${nowFactor * 100}%` }}
+                />
             )}
 
             <div
-                className={cn('flex justify-between border-blue-500 border-b-4 text-primary/60 text-xs', {
-                    'border-red-500': !inRange && props.withNotebooks,
-                    'opacity-30': !isToday && !props.withNotebooks && props.opacityOutOfRange,
-                })}
+                className={cn(
+                    'flex justify-between border-blue-500 border-b-4 text-primary/60 text-xs',
+                    {
+                        'border-red-500': !inRange && props.withNotebooks,
+                        'opacity-30':
+                            !isToday &&
+                            !props.withNotebooks &&
+                            props.opacityOutOfRange,
+                    },
+                )}
                 style={{
                     marginLeft: `${minFactor * 100}%`,
                     width: `${(maxFactor - minFactor) * 100}%`,

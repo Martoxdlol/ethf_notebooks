@@ -1,3 +1,7 @@
+import { Loader2Icon, MinusIcon, PlusIcon } from 'lucide-react'
+import { createId } from 'm3-stack/helpers'
+import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import { DatePicker } from '@/components/date-picker'
 import { DiscreteTimeSelect } from '@/components/discrete-time-select'
 import { InventoryUserPicker } from '@/components/inventory-user-picker'
@@ -16,13 +20,9 @@ import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Textarea } from '@/components/ui/textarea'
 import { api } from '@/lib/api-client'
-import { type Time, decodeTime, encodeTime } from '@/lib/constants'
+import { decodeTime, encodeTime, type Time } from '@/lib/constants'
 import { useIsAdmin } from '@/lib/hooks'
 import { cn } from '@/lib/utils'
-import { Loader2Icon, MinusIcon, PlusIcon } from 'lucide-react'
-import { createId } from 'm3-stack/helpers'
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
 
 export function NewReservationScreen() {
     const [qty, setQty] = useState(1)
@@ -58,7 +58,12 @@ export function NewReservationScreen() {
 
     const isValid = date && from && to && course && place && qty > 0
 
-    const { mutateAsync: createReservation, isPending, error, reset } = api.createReservation.useMutation()
+    const {
+        mutateAsync: createReservation,
+        isPending,
+        error,
+        reset,
+    } = api.createReservation.useMutation()
 
     function handleSubmit() {
         if (!(date && from && to && course && place && qty > 0)) {
@@ -85,20 +90,24 @@ export function NewReservationScreen() {
     }
 
     const calculateAvailabilityEnabled = !!(date && from && to)
-    const { data: availability, isPending: availabilityIsPending } = api.availabilityCheck.useQuery(
-        {
-            date: {
-                year: date?.getFullYear() ?? 0,
-                month: (date?.getMonth() ?? 0) + 1,
-                day: date?.getDate() ?? 0,
+    const { data: availability, isPending: availabilityIsPending } =
+        api.availabilityCheck.useQuery(
+            {
+                date: {
+                    year: date?.getFullYear() ?? 0,
+                    month: (date?.getMonth() ?? 0) + 1,
+                    day: date?.getDate() ?? 0,
+                },
+                from: from!,
+                to: to!,
             },
-            from: from!,
-            to: to!,
-        },
-        { enabled: calculateAvailabilityEnabled },
-    )
+            { enabled: calculateAvailabilityEnabled },
+        )
 
-    const availabilityPassed: boolean = calculateAvailabilityEnabled && !availabilityIsPending && qty <= (availability?.available ?? 0)
+    const availabilityPassed: boolean =
+        calculateAvailabilityEnabled &&
+        !availabilityIsPending &&
+        qty <= (availability?.available ?? 0)
 
     const isAdmin = useIsAdmin()
 
@@ -107,11 +116,17 @@ export function NewReservationScreen() {
             <AlertDialog open={!!error}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>No se pudo crear la reserva</AlertDialogTitle>
-                        <AlertDialogDescription>{error?.message}</AlertDialogDescription>
+                        <AlertDialogTitle>
+                            No se pudo crear la reserva
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {error?.message}
+                        </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => reset()}>Cerrar</AlertDialogCancel>
+                        <AlertDialogCancel onClick={() => reset()}>
+                            Cerrar
+                        </AlertDialogCancel>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -130,7 +145,11 @@ export function NewReservationScreen() {
                             <div className='flex items-center gap-4'>
                                 <input
                                     value={qty}
-                                    onChange={(e) => setQtySafe(Number.parseInt(e.target.value))}
+                                    onChange={(e) =>
+                                        setQtySafe(
+                                            Number.parseInt(e.target.value, 10),
+                                        )
+                                    }
                                     type='number'
                                     className='h-12 w-16 rounded-none border-b-2 bg-primary/5 text-center text-lg'
                                     style={{
@@ -143,15 +162,32 @@ export function NewReservationScreen() {
                                     <p>Notebooks</p>
                                 </div>
                                 <div className='flex'>
-                                    <Button size='icon' variant='ghost' onClick={removeOne} type='button'>
+                                    <Button
+                                        size='icon'
+                                        variant='ghost'
+                                        onClick={removeOne}
+                                        type='button'
+                                    >
                                         <MinusIcon />
                                     </Button>
-                                    <Button size='icon' variant='ghost' onClick={addOne} type='button'>
+                                    <Button
+                                        size='icon'
+                                        variant='ghost'
+                                        onClick={addOne}
+                                        type='button'
+                                    >
                                         <PlusIcon />
                                     </Button>
                                 </div>
                             </div>
-                            <Slider value={[qty]} max={100} step={1} onValueChange={(values) => setQtySafe(values[0]!)} />
+                            <Slider
+                                value={[qty]}
+                                max={100}
+                                step={1}
+                                onValueChange={(values) =>
+                                    setQtySafe(values[0]!)
+                                }
+                            />
                         </Card>
                     </section>
                     {isAdmin && (
@@ -211,21 +247,29 @@ export function NewReservationScreen() {
                     </section>
                     <section>
                         <h2 className='mb-1'>Fecha</h2>
-                        <DatePicker onChange={(value) => setDate(value)} value={date} placeholder='Seleccionar fecha' />
+                        <DatePicker
+                            onChange={(value) => setDate(value)}
+                            value={date}
+                            placeholder='Seleccionar fecha'
+                        />
                     </section>
                     <section>
                         <h2 className='mb-1'>Horario</h2>
                         <div className='grid grid-cols-2 gap-2'>
                             <DiscreteTimeSelect
                                 onChange={(value) => {
-                                    setFrom(value ? decodeTime(value) : undefined)
+                                    setFrom(
+                                        value ? decodeTime(value) : undefined,
+                                    )
                                 }}
                                 value={from ? encodeTime(from) : undefined}
                                 placeholder='Desde'
                                 maxExclusive={to ? encodeTime(to) : undefined}
                             />
                             <DiscreteTimeSelect
-                                minInclusive={from ? encodeTime(from) : undefined}
+                                minInclusive={
+                                    from ? encodeTime(from) : undefined
+                                }
                                 onChange={(value) => {
                                     setTo(value ? decodeTime(value) : undefined)
                                 }}
@@ -251,7 +295,8 @@ export function NewReservationScreen() {
                                 Pedidas{' '}
                                 <span
                                     className={cn({
-                                        'text-red-500': qty > availability.available,
+                                        'text-red-500':
+                                            qty > availability.available,
                                     })}
                                 >
                                     {qty}
@@ -259,18 +304,29 @@ export function NewReservationScreen() {
                                 de {availability.available} disponibles
                             </p>
 
-                            {!availabilityPassed && <p className='text-red-500'>No hay suficientes notebooks disponibles</p>}
+                            {!availabilityPassed && (
+                                <p className='text-red-500'>
+                                    No hay suficientes notebooks disponibles
+                                </p>
+                            )}
                         </Card>
                     )}
 
                     {!availability && calculateAvailabilityEnabled && (
                         <Card className='flex items-center justify-center gap-2 p-4 opacity-60'>
-                            <Loader2Icon className='mr-2 animate-spin' size={16} />
+                            <Loader2Icon
+                                className='mr-2 animate-spin'
+                                size={16}
+                            />
                             <span>Calculando disponibilidad...</span>
                         </Card>
                     )}
 
-                    <Button type='submit' className='h-12 w-full' disabled={!isValid || isPending || !availabilityPassed}>
+                    <Button
+                        type='submit'
+                        className='h-12 w-full'
+                        disabled={!isValid || isPending || !availabilityPassed}
+                    >
                         Confirmar
                     </Button>
                 </div>

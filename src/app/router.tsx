@@ -24,7 +24,7 @@ function Redirect(props: { path: string }) {
 
     useEffect(() => {
         navigate(props.path, { replace: true })
-    }, [])
+    }, [navigate, props.path])
 
     return null
 }

@@ -1,14 +1,14 @@
+import dayjs from 'dayjs'
+import { useMemo } from 'react'
 import { api } from '@/lib/api-client'
-import {} from '@/lib/constants'
 import { useHardware } from '@/lib/hooks'
 import { cn } from '@/lib/utils'
 import type { Hardware } from '@/server/inventory'
-import dayjs from 'dayjs'
-import { useMemo } from 'react'
 
 import 'dayjs/locale/es'
-import { ReservationProgressBar } from '@/components/reservation-progress-bar'
 import { Link, useSearchParams } from 'react-router'
+import { ReservationProgressBar } from '@/components/reservation-progress-bar'
+
 dayjs.locale('es')
 export function HomeScreen() {
     const [params] = useSearchParams()
@@ -75,7 +75,11 @@ export function HomeScreen() {
                                     place={reservation.place}
                                     start={reservation.from}
                                     end={reservation.to}
-                                    hardware={hard.hardwareByReservationId.get(reservation.id) ?? []}
+                                    hardware={
+                                        hard.hardwareByReservationId.get(
+                                            reservation.id,
+                                        ) ?? []
+                                    }
                                 />
                             ))}
                         </div>
@@ -99,7 +103,10 @@ function ReservationTile(props: {
     const inRange = Date.now() >= props.start && Date.now() <= props.end
 
     return (
-        <Link className='block cursor-pointer p-3 hover:bg-primary/5 active:bg-primary/5' to={`/reservas/${props.id}`}>
+        <Link
+            className='block cursor-pointer p-3 hover:bg-primary/5 active:bg-primary/5'
+            to={`/reservas/${props.id}`}
+        >
             <div className='flex items-center gap-4 p-1 pb-0'>
                 <div className='flex size-12 items-center justify-center rounded-full bg-primary/5 font-mono font-semibold text-lg'>
                     {props.quantity}

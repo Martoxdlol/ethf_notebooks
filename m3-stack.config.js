@@ -4,16 +4,16 @@ import { createConfig } from 'm3-stack/config'
 export default createConfig({
     build: {
         bundleDependencies: true,
-        externalDependencies: ['crypto-js', 'pngjs', 'react']
+        externalDependencies: ['crypto-js', 'pngjs', 'react'],
     },
     vite: {
         resolve: {
             alias: {
-                '@': resolve('./src')
-            }
+                '@': resolve('./src'),
+            },
         },
         optimizeDeps: {
-            exclude: ['@preflower/barcode-detector-polyfill']
-        }
-    }
+            exclude: ['@preflower/barcode-detector-polyfill'],
+        },
+    },
 })

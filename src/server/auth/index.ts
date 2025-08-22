@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { type DBType, createDatabase } from '../db'
+import { createDatabase, type DBType } from '../db'
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:5173'
 

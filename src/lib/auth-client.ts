@@ -17,7 +17,12 @@ export type SessionData = NonNullable<Session['data']>
 export function useSession(): Session {
     const realSession = authClient.useSession()
 
-    const data: SessionData | null = useCacheValue('session-data', realSession.data, !realSession.isPending) ?? null
+    const data: SessionData | null =
+        useCacheValue(
+            'session-data',
+            realSession.data,
+            !realSession.isPending,
+        ) ?? null
 
     return {
         ...realSession,
@@ -30,7 +35,9 @@ export function useUserData() {
     const session = useSession()
 
     if (!session.data?.user) {
-        throw new Error('User is not logged in. Please use some barrier to prevent this component from rendering.')
+        throw new Error(
+            'User is not logged in. Please use some barrier to prevent this component from rendering.',
+        )
     }
 
     return session.data.user

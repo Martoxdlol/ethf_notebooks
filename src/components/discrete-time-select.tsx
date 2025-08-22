@@ -1,6 +1,14 @@
-import { compareTimes, decodeTime, encodeTime, times } from '@/lib/constants'
 import { useMemo } from 'react'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
+import { compareTimes, decodeTime, encodeTime, times } from '@/lib/constants'
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from './ui/select'
 
 export function DiscreteTimeSelect(props: {
     onChange: (value: string | undefined) => void
@@ -10,8 +18,12 @@ export function DiscreteTimeSelect(props: {
     minInclusive?: string
 }) {
     const filteredTimes = useMemo(() => {
-        const minInclusive = props.minInclusive ? decodeTime(props.minInclusive) : undefined
-        const maxExclusive = props.maxExclusive ? decodeTime(props.maxExclusive) : undefined
+        const minInclusive = props.minInclusive
+            ? decodeTime(props.minInclusive)
+            : undefined
+        const maxExclusive = props.maxExclusive
+            ? decodeTime(props.maxExclusive)
+            : undefined
 
         return times.filter((time) => {
             if (minInclusive && compareTimes(time, minInclusive) <= 0) {
@@ -26,7 +38,10 @@ export function DiscreteTimeSelect(props: {
     }, [props.maxExclusive, props.minInclusive])
 
     return (
-        <Select onValueChange={(value) => props.onChange(value)} required={true}>
+        <Select
+            onValueChange={(value) => props.onChange(value)}
+            required={true}
+        >
             <SelectTrigger>
                 <SelectValue placeholder={props.placeholder} />
             </SelectTrigger>

@@ -1,4 +1,4 @@
-import { TRPCError, initTRPC } from '@trpc/server'
+import { initTRPC, TRPCError } from '@trpc/server'
 import SuperJSON from 'superjson'
 import type { Strings } from '../../lib/strings'
 import type { AuthType } from '../auth'
@@ -42,7 +42,10 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 
     const inventoryUser = await getUser(session.user.email)
 
-    const isAdmin = inventoryUser?.groups?.rows.some((group) => group.name === 'notebooks_app_admin') ?? false
+    const isAdmin =
+        inventoryUser?.groups?.rows.some(
+            (group) => group.name === 'notebooks_app_admin',
+        ) ?? false
 
     return next({
         ctx: {

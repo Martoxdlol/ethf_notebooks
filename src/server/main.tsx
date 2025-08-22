@@ -1,14 +1,13 @@
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import 'dotenv/config'
-import { readFile } from 'node:fs/promises'
-import { stat } from 'node:fs/promises'
+import { readFile, stat } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { Hono } from 'hono'
-import { type Strings, createStrings } from '../lib/strings'
+import { createStrings, type Strings } from '../lib/strings'
 import { api } from './api'
 import { type AuthType, createAuth } from './auth'
-import { type DBType, createDatabase, type schema } from './db'
+import { createDatabase, type DBType, type schema } from './db'
 import { tRPCHandler } from './trpc/handler'
 
 declare global {
@@ -26,9 +25,15 @@ declare global {
 process.env.TZ = 'America/Argentina/Buenos_Aires'
 
 export async function main() {
-    const publicPath = resolve(new URL(import.meta.url).pathname, '../../public')
+    const publicPath = resolve(
+        new URL(import.meta.url).pathname,
+        '../../public',
+    )
 
-    const indexHtmlContent = await readFile(join(publicPath, 'index.html'), 'utf-8')
+    const indexHtmlContent = await readFile(
+        join(publicPath, 'index.html'),
+        'utf-8',
+    )
     const db = createDatabase()
     const auth = createAuth({ db })
     const i18n = createStrings()
@@ -52,7 +57,9 @@ export async function main() {
         .use(
             '*',
             serveStatic({
-                root: (await stat('./dist').catch(() => null)) ? './dist/public' : './public',
+                root: (await stat('./dist').catch(() => null))
+                    ? './dist/public'
+                    : './public',
             }),
         )
         .get('*', async (c) => {

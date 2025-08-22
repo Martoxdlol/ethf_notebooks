@@ -1,13 +1,25 @@
-import { api } from '@/lib/api-client'
-import { type Time, decodeTime, encodeTime } from '@/lib/constants'
 import { useState } from 'react'
+import { api } from '@/lib/api-client'
+import { decodeTime, encodeTime, type Time } from '@/lib/constants'
 import { DiscreteTimeSelect } from './discrete-time-select'
 import { InventoryUserPicker } from './inventory-user-picker'
 import { ReservationPicker } from './reservation-picker'
 import { Button } from './ui/button'
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from './ui/drawer'
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from './ui/drawer'
 
-export function CheckoutModal(props: { children: React.ReactNode; assets: string[]; onConfirmed: () => void }) {
+export function CheckoutModal(props: {
+    children: React.ReactNode
+    assets: string[]
+    onConfirmed: () => void
+}) {
     const [userId, setUserId] = useState<number>()
     const [from, setFrom] = useState<Time>()
     const [to, setTo] = useState<Time>()
@@ -43,7 +55,11 @@ export function CheckoutModal(props: { children: React.ReactNode; assets: string
                     {/* <DrawerDescription></DrawerDescription> */}
                 </DrawerHeader>
                 <div className='flex flex-col gap-2 px-4'>
-                    <InventoryUserPicker onChange={setUserId} value={userId} noDefault={true} />
+                    <InventoryUserPicker
+                        onChange={setUserId}
+                        value={userId}
+                        noDefault={true}
+                    />
                     <ReservationPicker
                         onChange={(value) => {
                             setReservationId(value)
@@ -53,20 +69,34 @@ export function CheckoutModal(props: { children: React.ReactNode; assets: string
                     />
                     {!reservationId && (
                         <>
-                            <p className='font-semibold text-xs'>Nueva reserva (o elegir una existente ⬆️)</p>
+                            <p className='font-semibold text-xs'>
+                                Nueva reserva (o elegir una existente ⬆️)
+                            </p>
                             <div className='flex items-center gap-2'>
                                 <DiscreteTimeSelect
                                     onChange={(value) => {
-                                        setFrom(value ? decodeTime(value) : undefined)
+                                        setFrom(
+                                            value
+                                                ? decodeTime(value)
+                                                : undefined,
+                                        )
                                     }}
                                     value={from ? encodeTime(from) : undefined}
                                     placeholder='Desde'
-                                    maxExclusive={to ? encodeTime(to) : undefined}
+                                    maxExclusive={
+                                        to ? encodeTime(to) : undefined
+                                    }
                                 />
                                 <DiscreteTimeSelect
-                                    minInclusive={from ? encodeTime(from) : undefined}
+                                    minInclusive={
+                                        from ? encodeTime(from) : undefined
+                                    }
                                     onChange={(value) => {
-                                        setTo(value ? decodeTime(value) : undefined)
+                                        setTo(
+                                            value
+                                                ? decodeTime(value)
+                                                : undefined,
+                                        )
                                     }}
                                     value={to ? encodeTime(to) : undefined}
                                     placeholder='Hasta'

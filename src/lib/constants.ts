@@ -23,7 +23,9 @@ export function encodeTime(time: Time): string {
 }
 
 export function decodeTime(time: string): Time {
-    const [hours, minutes] = time.split(':').map((part) => Number.parseInt(part))
+    const [hours, minutes] = time
+        .split(':')
+        .map((part) => Number.parseInt(part, 10))
 
     if (!(hours && minutes)) {
         throw new Error('Invalid time format')

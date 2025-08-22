@@ -1,8 +1,16 @@
-import { api } from '@/lib/api-client'
 import dayjs from 'dayjs'
 import { Loader2Icon } from 'lucide-react'
+import { api } from '@/lib/api-client'
 import { Button } from './ui/button'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from './ui/select'
 
 export function ReservationPicker(props: {
     onChange: (value: string) => void
@@ -17,7 +25,12 @@ export function ReservationPicker(props: {
 
     if (isPending) {
         return (
-            <Button disabled={true} variant='outline' className='w-full' type='button'>
+            <Button
+                disabled={true}
+                variant='outline'
+                className='w-full'
+                type='button'
+            >
                 <Loader2Icon className='animate-spin' />
             </Button>
         )
@@ -42,7 +55,10 @@ export function ReservationPicker(props: {
                     {data?.map((u, i) => (
                         <SelectItem key={i} value={u.id.toString()}>
                             <p>
-                                <span className='font-semibold'>{u.notebooksQuantity}</span> - de {dayjs(u.from).format('HH:mm')} a{' '}
+                                <span className='font-semibold'>
+                                    {u.notebooksQuantity}
+                                </span>{' '}
+                                - de {dayjs(u.from).format('HH:mm')} a{' '}
                                 {dayjs(u.to).format('HH:mm')}
                             </p>
                             <p>{u.name}</p>

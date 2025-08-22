@@ -9,7 +9,9 @@ export function ListScreen() {
     return (
         <div className='grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3'>
             {hard.hardware.map((hardware) => {
-                let reservationId = hard.getReservationIdByTag(hardware.asset_tag)
+                let reservationId = hard.getReservationIdByTag(
+                    hardware.asset_tag,
+                )
 
                 if (!hardware.expected_checkin) {
                     reservationId = null
@@ -29,7 +31,9 @@ export function ListScreen() {
                         >
                             {hardware.assigned_to?.name ?? 'disponible'}
                         </p>
-                        {reservationId && <ReservationRow reservationId={reservationId} />}
+                        {reservationId && (
+                            <ReservationRow reservationId={reservationId} />
+                        )}
                     </div>
                 )
             })}
@@ -40,9 +44,12 @@ export function ListScreen() {
 function ReservationRow(props: { reservationId: string }) {
     const hard = useHardware()
 
-    const { data: reservation } = api.getReservation.useQuery(props.reservationId, {
-        enabled: !!props.reservationId,
-    })
+    const { data: reservation } = api.getReservation.useQuery(
+        props.reservationId,
+        {
+            enabled: !!props.reservationId,
+        },
+    )
 
     if (!reservation) {
         return null

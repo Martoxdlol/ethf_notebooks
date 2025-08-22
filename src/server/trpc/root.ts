@@ -3,9 +3,18 @@ import dayjs from 'dayjs'
 import { and, eq, gt, gte, lte } from 'drizzle-orm'
 import { createId } from 'm3-stack/helpers'
 import { z } from 'zod'
-import { calculateAvailability, calculateAvailabilityRanges } from '../calculate-availability'
+import {
+    calculateAvailability,
+    calculateAvailabilityRanges,
+} from '../calculate-availability'
 import { schema } from '../db'
-import { checkinId, checkoutId, getUserById, getUsers, listHardware } from '../inventory'
+import {
+    checkinId,
+    checkoutId,
+    getUserById,
+    getUsers,
+    listHardware,
+} from '../inventory'
 import { protectedProcedure, router } from './trpc'
 
 export const appRouter = router({
@@ -96,8 +105,18 @@ export const appRouter = router({
                     and(
                         gte(schema.reservation.from, from),
                         lte(schema.reservation.from, to),
-                        ctx.isAdmin ? undefined : eq(schema.reservation.inventoryUserId, ctx.inventoryUser.id),
-                        input?.inventoryUserId ? eq(schema.reservation.inventoryUserId, input.inventoryUserId) : undefined,
+                        ctx.isAdmin
+                            ? undefined
+                            : eq(
+                                  schema.reservation.inventoryUserId,
+                                  ctx.inventoryUser.id,
+                              ),
+                        input?.inventoryUserId
+                            ? eq(
+                                  schema.reservation.inventoryUserId,
+                                  input.inventoryUserId,
+                              )
+                            : undefined,
                     ),
                 )
 
@@ -123,8 +142,20 @@ export const appRouter = router({
             }),
         )
         .query(async ({ ctx, input }) => {
-            const from = new Date(input.date.year, input.date.month - 1, input.date.day, input.from.hours, input.from.minutes)
-            const to = new Date(input.date.year, input.date.month - 1, input.date.day, input.to.hours, input.to.minutes)
+            const from = new Date(
+                input.date.year,
+                input.date.month - 1,
+                input.date.day,
+                input.from.hours,
+                input.from.minutes,
+            )
+            const to = new Date(
+                input.date.year,
+                input.date.month - 1,
+                input.date.day,
+                input.to.hours,
+                input.to.minutes,
+            )
 
             return calculateAvailability({
                 db: ctx.db,
@@ -157,8 +188,20 @@ export const appRouter = router({
             return calculateAvailabilityRanges({
                 db: ctx.db,
                 ranges: input.map((range) => {
-                    const from = new Date(range.date.year, range.date.month - 1, range.date.day, range.from.hours, range.from.minutes)
-                    const to = new Date(range.date.year, range.date.month - 1, range.date.day, range.to.hours, range.to.minutes)
+                    const from = new Date(
+                        range.date.year,
+                        range.date.month - 1,
+                        range.date.day,
+                        range.from.hours,
+                        range.from.minutes,
+                    )
+                    const to = new Date(
+                        range.date.year,
+                        range.date.month - 1,
+                        range.date.day,
+                        range.to.hours,
+                        range.to.minutes,
+                    )
 
                     return {
                         from: from.getTime(),
@@ -197,7 +240,9 @@ export const appRouter = router({
             }
 
             const inventory = await listHardware()
-            const assetsByTag = new Map(inventory.rows.map((h) => [h.asset_tag, h]))
+            const assetsByTag = new Map(
+                inventory.rows.map((h) => [h.asset_tag, h]),
+            )
 
             const year = new Date().getFullYear()
             const month = new Date().getMonth()
@@ -235,12 +280,25 @@ export const appRouter = router({
                 if (!(input.from && input.to && input.inventoryUserId)) {
                     throw new TRPCError({
                         code: 'BAD_REQUEST',
-                        message: 'from y to son requeridos si reservationId no esta presente',
+                        message:
+                            'from y to son requeridos si reservationId no esta presente',
                     })
                 }
 
-                from = new Date(year, month, day, input.from!.hours, input.from!.minutes)
-                to = new Date(year, month, day, input.to!.hours, input.to!.minutes)
+                from = new Date(
+                    year,
+                    month,
+                    day,
+                    input.from!.hours,
+                    input.from!.minutes,
+                )
+                to = new Date(
+                    year,
+                    month,
+                    day,
+                    input.to!.hours,
+                    input.to!.minutes,
+                )
 
                 const user = await getUserById(input.inventoryUserId)
                 inventoryUserId = input.inventoryUserId
@@ -307,7 +365,9 @@ export const appRouter = router({
             }
 
             const inventory = await listHardware()
-            const assetsByTag = new Map(inventory.rows.map((h) => [h.asset_tag, h]))
+            const assetsByTag = new Map(
+                inventory.rows.map((h) => [h.asset_tag, h]),
+            )
 
             for (const tag of input.assetTags) {
                 const id = assetsByTag.get(tag)?.id
@@ -348,8 +408,20 @@ export const appRouter = router({
             }),
         )
         .mutation(async ({ ctx, input }) => {
-            let from = new Date(input.date.year, input.date.month - 1, input.date.day, input.from.hours, input.from.minutes)
-            const to = new Date(input.date.year, input.date.month - 1, input.date.day, input.to.hours, input.to.minutes)
+            let from = new Date(
+                input.date.year,
+                input.date.month - 1,
+                input.date.day,
+                input.from.hours,
+                input.from.minutes,
+            )
+            const to = new Date(
+                input.date.year,
+                input.date.month - 1,
+                input.date.day,
+                input.to.hours,
+                input.to.minutes,
+            )
 
             const ONE_HOUR = 60 * 60 * 1000
             if (from.getTime() < Date.now() - ONE_HOUR) {
@@ -359,7 +431,10 @@ export const appRouter = router({
                 })
             }
 
-            if (from.getTime() < Date.now() && from.getTime() > Date.now() - ONE_HOUR) {
+            if (
+                from.getTime() < Date.now() &&
+                from.getTime() > Date.now() - ONE_HOUR
+            ) {
                 from = new Date()
             }
 
@@ -370,7 +445,8 @@ export const appRouter = router({
                 })
             }
 
-            const inventoryUserId = input.inventoryUserId ?? ctx.inventoryUser?.id
+            const inventoryUserId =
+                input.inventoryUserId ?? ctx.inventoryUser?.id
 
             if (!inventoryUserId) {
                 throw new TRPCError({
@@ -410,50 +486,64 @@ export const appRouter = router({
             return r[0]!
         }),
 
-    getReservation: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-        const reservation = await ctx.db.query.reservation.findFirst({
-            where: and(
-                eq(schema.reservation.id, input),
-                ctx.isAdmin ? undefined : eq(schema.reservation.inventoryUserId, ctx.inventoryUser!.id),
-            ),
-        })
-
-        if (!reservation) {
-            throw new TRPCError({
-                code: 'NOT_FOUND',
-                message: 'Reserva no encontrada',
-            })
-        }
-
-        return reservation
-    }),
-
-    deleteReservation: protectedProcedure.input(z.string()).mutation(async ({ ctx, input }) => {
-        if (!ctx.isAdmin) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'No estas autorizado para realizar esta acción',
-            })
-        }
-
-        const r = await ctx.db
-            .delete(schema.reservation)
-            .where(
-                and(
+    getReservation: protectedProcedure
+        .input(z.string())
+        .query(async ({ ctx, input }) => {
+            const reservation = await ctx.db.query.reservation.findFirst({
+                where: and(
                     eq(schema.reservation.id, input),
-                    ctx.isAdmin ? undefined : eq(schema.reservation.inventoryUserId, ctx.inventoryUser!.id),
-                    gt(
-                        schema.reservation.from,
-                        Date.now() +
-                            // 1 hour
-                            60 * 60 * 1000,
-                    ),
+                    ctx.isAdmin
+                        ? undefined
+                        : eq(
+                              schema.reservation.inventoryUserId,
+                              ctx.inventoryUser!.id,
+                          ),
                 ),
-            )
-            .returning()
+            })
 
-        return r.length > 0
-    }),
+            if (!reservation) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Reserva no encontrada',
+                })
+            }
+
+            return reservation
+        }),
+
+    deleteReservation: protectedProcedure
+        .input(z.string())
+        .mutation(async ({ ctx, input }) => {
+            if (!ctx.isAdmin) {
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED',
+                    message: 'No estas autorizado para realizar esta acción',
+                })
+            }
+
+            const r = await ctx.db
+                .delete(schema.reservation)
+                .where(
+                    and(
+                        eq(schema.reservation.id, input),
+                        ctx.isAdmin
+                            ? undefined
+                            : eq(
+                                  schema.reservation.inventoryUserId,
+                                  ctx.inventoryUser!.id,
+                              ),
+                        gt(
+                            schema.reservation.from,
+                            Date.now() +
+                                // 1 hour
+                                60 * 60 * 1000,
+                        ),
+                    ),
+                )
+                .returning()
+
+            return r.length > 0
+        }),
 })
 
 export type AppRouter = typeof appRouter

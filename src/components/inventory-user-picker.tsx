@@ -1,7 +1,15 @@
-import { api } from '@/lib/api-client'
 import { Loader2Icon } from 'lucide-react'
+import { api } from '@/lib/api-client'
 import { Button } from './ui/button'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from './ui/select'
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from './ui/select'
 
 export function InventoryUserPicker(props: {
     onChange: (value: number) => void
@@ -12,7 +20,12 @@ export function InventoryUserPicker(props: {
 
     if (isPending) {
         return (
-            <Button disabled={true} variant='outline' className='w-full' type='button'>
+            <Button
+                disabled={true}
+                variant='outline'
+                className='w-full'
+                type='button'
+            >
                 <Loader2Icon className='animate-spin' />
             </Button>
         )
@@ -29,8 +42,12 @@ export function InventoryUserPicker(props: {
     return (
         <Select
             disabled={!data?.isAdmin}
-            value={(props.value?.toString() ?? props.noDefault) ? undefined : data.me.id.toString()}
-            onValueChange={(v) => props.onChange(Number.parseInt(v))}
+            value={
+                (props.value?.toString() ?? props.noDefault)
+                    ? undefined
+                    : data.me.id.toString()
+            }
+            onValueChange={(v) => props.onChange(Number.parseInt(v, 10))}
         >
             <SelectTrigger>
                 <SelectValue placeholder='Seleccionar usuario...' />

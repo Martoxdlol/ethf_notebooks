@@ -15,11 +15,7 @@ export function HomeNavActions() {
 }
 
 export function AvailabilityNavActions() {
-    return (
-        <>
-            <AvailabilityCalendar />
-        </>
-    )
+    return <AvailabilityCalendar />
 }
 
 function Options() {
@@ -56,8 +52,16 @@ function Options() {
                 </Button>
             </PopoverTrigger>
             <PopoverContent className='flex flex-col gap-2 p-3'>
-                <DatePicker placeholder='Desde' value={fromAsDate} onChange={handleOnChangeFrom} />
-                <DatePicker placeholder={from ? 'Una semana' : 'Hasta'} value={toAsDate} onChange={handleOnChangeTo} />
+                <DatePicker
+                    placeholder='Desde'
+                    value={fromAsDate}
+                    onChange={handleOnChangeFrom}
+                />
+                <DatePicker
+                    placeholder={from ? 'Una semana' : 'Hasta'}
+                    value={toAsDate}
+                    onChange={handleOnChangeTo}
+                />
             </PopoverContent>
         </Popover>
     )
@@ -71,7 +75,12 @@ function AvailabilityCalendar() {
     return (
         <DatePicker
             value={dayjs(date).toDate()}
-            onChange={(date) => navigate({ pathname: '/disponibilidad', search: `?fecha=${dayjs(date).format('YYYY-MM-DD')}` })}
+            onChange={(date) =>
+                navigate({
+                    pathname: '/disponibilidad',
+                    search: `?fecha=${dayjs(date).format('YYYY-MM-DD')}`,
+                })
+            }
         >
             <Button size='icon' variant='ghost' type='button'>
                 <CalendarDaysIcon />

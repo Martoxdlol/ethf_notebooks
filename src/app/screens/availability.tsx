@@ -1,8 +1,8 @@
-import { DatePicker } from '@/components/date-picker'
-import { api } from '@/lib/api-client'
-import { type Time, encodeTime, times } from '@/lib/constants'
 import dayjs from 'dayjs'
 import { useSearchParams } from 'react-router'
+import { DatePicker } from '@/components/date-picker'
+import { api } from '@/lib/api-client'
+import { encodeTime, type Time, times } from '@/lib/constants'
 
 export function AvailabilityScreen() {
     const [params, setParams] = useSearchParams()
@@ -19,7 +19,10 @@ export function AvailabilityScreen() {
                             if (!date) {
                                 return
                             }
-                            params.set('fecha', dayjs(date).format('YYYY-MM-DD'))
+                            params.set(
+                                'fecha',
+                                dayjs(date).format('YYYY-MM-DD'),
+                            )
                             setParams(params)
                         }}
                         placeholder='Seleccionar fecha'
@@ -61,9 +64,15 @@ function AvailabilityRows(props: { date: Date }) {
     return (
         <>
             <div className='mt-4 flex h-6 justify-around text-white'>
-                <div className='flex h-full items-center bg-green-500 px-2'>Disponibles</div>
-                <div className='flex h-full items-center bg-amber-500 px-2'>Reservadas</div>
-                <div className='flex h-full items-center bg-gray-500 px-2'>No disponibles</div>
+                <div className='flex h-full items-center bg-green-500 px-2'>
+                    Disponibles
+                </div>
+                <div className='flex h-full items-center bg-amber-500 px-2'>
+                    Reservadas
+                </div>
+                <div className='flex h-full items-center bg-gray-500 px-2'>
+                    No disponibles
+                </div>
             </div>
             {ranges.map(({ from }, i) => {
                 const availability = data?.[i]
@@ -74,15 +83,26 @@ function AvailabilityRows(props: { date: Date }) {
 
                 return (
                     <div className='px-4 pt-2' key={encodeTime(from)}>
-                        <p className='font-semibold text-sm'>{encodeTime(from)}</p>
+                        <p className='font-semibold text-sm'>
+                            {encodeTime(from)}
+                        </p>
                         <div className='flex h-6 font-semibold text-white'>
-                            <div className='flex h-full items-center bg-green-500 px-2' style={{ flex: availability.available }}>
+                            <div
+                                className='flex h-full items-center bg-green-500 px-2'
+                                style={{ flex: availability.available }}
+                            >
                                 {availability.available}
                             </div>
-                            <div className='flex h-full items-center bg-amber-500 px-2' style={{ flex: availability.reserved }}>
+                            <div
+                                className='flex h-full items-center bg-amber-500 px-2'
+                                style={{ flex: availability.reserved }}
+                            >
                                 {availability.reserved}
                             </div>
-                            <div className='flex h-full items-center bg-gray-500 px-2' style={{ flex: availability.unavailable }}>
+                            <div
+                                className='flex h-full items-center bg-gray-500 px-2'
+                                style={{ flex: availability.unavailable }}
+                            >
                                 {availability.unavailable}
                             </div>
                         </div>

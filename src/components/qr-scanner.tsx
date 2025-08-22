@@ -6,21 +6,31 @@ import { Button } from './ui/button'
 
 export const QRScanner = memo(QRScannerNoMemo)
 
-function QRScannerNoMemo(props: {
-    width?: string
-    height?: string
-}) {
+function QRScannerNoMemo(props: { width?: string; height?: string }) {
     return (
-        <div style={{ width: props.width ?? '100%', height: props.height ?? '360px', overflow: 'hidden' }}>
+        <div
+            style={{
+                width: props.width ?? '100%',
+                height: props.height ?? '360px',
+                overflow: 'hidden',
+            }}
+        >
             <ErrorBoundary
                 fallbackRender={({ error }) => (
                     <div className='relative flex size-full flex-col items-center justify-center gap-4 border-t border-r'>
                         <p className='text-xs'>Error de scanner</p>
                         <TriangleAlertIcon color='red' />
-                        <Button size='icon' variant='ghost' onClick={() => window.location.reload()}>
+                        <Button
+                            size='icon'
+                            variant='ghost'
+                            onClick={() => window.location.reload()}
+                        >
                             <RotateCcwIcon />
                         </Button>
-                        <p className='absolute bottom-0 font-mono text-xs opacity-50' onClick={() => alert(error.message)}>
+                        <p
+                            className='absolute bottom-0 font-mono text-xs opacity-50'
+                            onClick={() => alert(error.message)}
+                        >
                             Error: {error.message}
                         </p>
                     </div>
@@ -52,14 +62,19 @@ function QRScannerNoMemo(props: {
     )
 }
 
-export function useBarcodeEvent(callback: (value: string, barcode: DetectedBarcode) => void, deps?: unknown[]) {
+export function useBarcodeEvent(
+    callback: (value: string, barcode: DetectedBarcode) => void,
+    deps?: unknown[],
+) {
     return useEffect(() => {
         const controller = new AbortController()
 
         window.addEventListener(
             'barcode-scanned',
             (e) => {
-                const { message, data } = (e as CustomEvent<{ message: string; data: DetectedBarcode }>).detail
+                const { message, data } = (
+                    e as CustomEvent<{ message: string; data: DetectedBarcode }>
+                ).detail
                 callback(message, data)
             },
             { signal: controller.signal },

@@ -1,9 +1,10 @@
-import { type Hardware, getReservationIdByNotes } from '@/server/inventory'
 import { useMemo } from 'react'
+import { getReservationIdByNotes, type Hardware } from '@/server/inventory'
 import { api } from './api-client'
 
 export function useHardware() {
-    const { data, error, isPending, isFetched, refetch } = api.listAssets.useQuery()
+    const { data, error, isPending, isFetched, refetch } =
+        api.listAssets.useQuery()
 
     const hardwareByAssetTag = useMemo(() => {
         const map = new Map<string, Hardware>()

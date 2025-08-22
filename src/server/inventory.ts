@@ -122,7 +122,9 @@ export type HardwareResponse = {
 }
 
 export function listHardware(): Promise<HardwareResponse> {
-    return fetchInventory(`/hardware?category_id=${process.env.NOTEBOOKS_CATEGORY_ID ?? 2}&limit=1000`)
+    return fetchInventory(
+        `/hardware?category_id=${process.env.NOTEBOOKS_CATEGORY_ID ?? 2}&limit=1000`,
+    )
 }
 
 export type Group = {
@@ -149,7 +151,9 @@ export async function getUsers(): Promise<User[]> {
 }
 
 export async function getUser(email: string): Promise<User | null> {
-    const result = await (fetchInventory(`/users?email=${encodeURIComponent(email)}&limit=1`) as Promise<{ rows: User[] }>)
+    const result = await (fetchInventory(
+        `/users?email=${encodeURIComponent(email)}&limit=1`,
+    ) as Promise<{ rows: User[] }>)
 
     return result.rows[0] ?? null
 }

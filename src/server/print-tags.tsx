@@ -1,4 +1,12 @@
-import { Document, Image, Link, Page, Text, View, renderToStream } from '@react-pdf/renderer'
+import {
+    Document,
+    Image,
+    Link,
+    Page,
+    renderToStream,
+    Text,
+    View,
+} from '@react-pdf/renderer'
 import QRCode from 'qrcode'
 import { listHardware } from './inventory'
 
@@ -23,7 +31,9 @@ export async function responsePrintTags() {
 
     assets.sort((a, b) => a.tag.localeCompare(b.tag))
 
-    const r: ReadableStream = (await renderToStream(<MyDocument assets={assets} />)) as unknown as ReadableStream
+    const r: ReadableStream = (await renderToStream(
+        <MyDocument assets={assets} />,
+    )) as unknown as ReadableStream
 
     return new Response(r, {
         headers: {
@@ -51,22 +61,48 @@ function AssetSection(props: Asset & { xIndex: number; yIndex: number }) {
                 borderColor: '#888888',
             }}
         >
-            <View style={{ padding: '4mm', position: 'relative', flexDirection: 'row', gap: '5mm' }}>
-                <Image src={props.qrSrc} style={{ width: '45mm', height: '45mm', flexShrink: 0 }} />
+            <View
+                style={{
+                    padding: '4mm',
+                    position: 'relative',
+                    flexDirection: 'row',
+                    gap: '5mm',
+                }}
+            >
+                <Image
+                    src={props.qrSrc}
+                    style={{ width: '45mm', height: '45mm', flexShrink: 0 }}
+                />
                 <View style={{ flexShrink: 1 }}>
                     <Text style={{ fontSize: '4mm' }}>Nombre</Text>
                     <Text style={{ fontSize: '6mm' }}>{props.tag}</Text>
-                    <Text style={{ marginTop: '1mm', fontSize: '4mm' }}>Serial</Text>
+                    <Text style={{ marginTop: '1mm', fontSize: '4mm' }}>
+                        Serial
+                    </Text>
                     <Text style={{ fontSize: '6mm' }}>{props.serial}</Text>
-                    <Text style={{ marginTop: '1mm', fontSize: '4mm' }}>Modelo</Text>
+                    <Text style={{ marginTop: '1mm', fontSize: '4mm' }}>
+                        Modelo
+                    </Text>
                     <Text style={{ fontSize: '6mm' }}>{props.model}</Text>
                     <Link
                         src='https://www.henryford.edu.ar'
-                        style={{ marginTop: '1mm', fontSize: '4mm', justifyContent: 'center', color: '#000000' }}
+                        style={{
+                            marginTop: '1mm',
+                            fontSize: '4mm',
+                            justifyContent: 'center',
+                            color: '#000000',
+                        }}
                     >
                         www.henryford.edu.ar
                     </Link>
-                    <Link src='tel:+541163929190' style={{ fontSize: '4mm', justifyContent: 'center', color: '#000000' }}>
+                    <Link
+                        src='tel:+541163929190'
+                        style={{
+                            fontSize: '4mm',
+                            justifyContent: 'center',
+                            color: '#000000',
+                        }}
+                    >
                         11 6392-9190
                     </Link>
                 </View>
@@ -104,12 +140,31 @@ function MyDocument(props: { assets: Asset[] }) {
                         }}
                     >
                         {chunks.map((chunk, i) => (
-                            <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                            <View
+                                key={i}
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-around',
+                                }}
+                            >
                                 {chunk.map((asset, j) =>
                                     asset ? (
-                                        <AssetSection key={j} xIndex={j} yIndex={i} {...asset} />
+                                        <AssetSection
+                                            key={j}
+                                            xIndex={j}
+                                            yIndex={i}
+                                            {...asset}
+                                        />
                                     ) : (
-                                        <View key={j} style={{ flex: 1, borderLeft: 1, borderStyle: 'dashed', borderColor: '#888888' }} />
+                                        <View
+                                            key={j}
+                                            style={{
+                                                flex: 1,
+                                                borderLeft: 1,
+                                                borderStyle: 'dashed',
+                                                borderColor: '#888888',
+                                            }}
+                                        />
                                     ),
                                 )}
                             </View>

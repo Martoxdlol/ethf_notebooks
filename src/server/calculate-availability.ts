@@ -1,15 +1,29 @@
 import { and, gt, lt, or } from 'drizzle-orm'
 import { type DBTX, schema } from './db'
-import { type HardwareResponse, getReservationIdByNotes, listHardware } from './inventory'
+import {
+    getReservationIdByNotes,
+    type HardwareResponse,
+    listHardware,
+} from './inventory'
 
-export async function calculateAvailabilityRanges(opts: { db: DBTX; ranges: { from: number; to: number }[] }) {
+export async function calculateAvailabilityRanges(opts: {
+    db: DBTX
+    ranges: { from: number; to: number }[]
+}) {
     if (opts.ranges.length === 0) {
         return []
     }
 
     // Encontrar reservas que estén total o parcialmente dentro del rango de fechas
     const relevantReservations = await opts.db.query.reservation.findMany({
-        where: or(...opts.ranges.map((r) => and(gt(schema.reservation.to, r.from), lt(schema.reservation.from, r.to)))),
+        where: or(
+            ...opts.ranges.map((r) =>
+                and(
+                    gt(schema.reservation.to, r.from),
+                    lt(schema.reservation.from, r.to),
+                ),
+            ),
+        ),
         columns: {
             id: true,
             from: true,
@@ -32,19 +46,36 @@ export async function calculateAvailabilityRanges(opts: { db: DBTX; ranges: { fr
     }))
 }
 
-export async function calculateAvailability(opts: { db: DBTX; from: number; to: number }) {
-    return (await calculateAvailabilityRanges({ db: opts.db, ranges: [{ from: opts.from, to: opts.to }] }))[0]!
+export async function calculateAvailability(opts: {
+    db: DBTX
+    from: number
+    to: number
+}) {
+    return (
+        await calculateAvailabilityRanges({
+            db: opts.db,
+            ranges: [{ from: opts.from, to: opts.to }],
+        })
+    )[0]!
 }
 
 function calculateAvailabilityInternal(opts: {
     from: number
     to: number
     hardware: HardwareResponse
-    reservations: { id: string; from: number; to: number; notebooksQuantity: number }[]
+    reservations: {
+        id: string
+        from: number
+        to: number
+        notebooksQuantity: number
+    }[]
 }) {
     const { hardware } = opts
 
-    const relevantReservations = opts.reservations.filter((reservation) => reservation.from <= opts.to && reservation.to > opts.from)
+    const relevantReservations = opts.reservations.filter(
+        (reservation) =>
+            reservation.from <= opts.to && reservation.to > opts.from,
+    )
 
     // Cantidad de notebooks entregadas por reserva
     const checkedOutByReservation = new Map<string, number>()
@@ -66,7 +97,10 @@ function calculateAvailabilityInternal(opts: {
 
         if (reservationId && hard.expected_checkin) {
             // Se encontró una reserva asociada al hardware
-            checkedOutByReservation.set(reservationId, (checkedOutByReservation.get(reservationId) ?? 0) + 1)
+            checkedOutByReservation.set(
+                reservationId,
+                (checkedOutByReservation.get(reservationId) ?? 0) + 1,
+            )
         } else {
             // No se encontró una reserva asociada al hardware
             if (!hard.expected_checkin) {
@@ -74,7 +108,9 @@ function calculateAvailabilityInternal(opts: {
                 continue
             }
 
-            const expectedCheckIn = new Date(`${hard.expected_checkin}T00:00:00`).getTime()
+            const expectedCheckIn = new Date(
+                `${hard.expected_checkin}T00:00:00`,
+            ).getTime()
 
             if (expectedCheckIn > opts.from) {
                 unavailableHardware.add(hard.asset_tag)
@@ -94,11 +130,17 @@ function calculateAvailabilityInternal(opts: {
 
     for (const timeStamp of timeStamps) {
         const reservationsInTimeStamp = relevantReservations.filter(
-            (reservation) => reservation.from <= timeStamp && reservation.to > timeStamp,
+            (reservation) =>
+                reservation.from <= timeStamp && reservation.to > timeStamp,
         )
 
         const reservedQuantity = reservationsInTimeStamp.reduce(
-            (acc, reservation) => acc + Math.max(reservation.notebooksQuantity, checkedOutByReservation.get(reservation.id) ?? 0),
+            (acc, reservation) =>
+                acc +
+                Math.max(
+                    reservation.notebooksQuantity,
+                    checkedOutByReservation.get(reservation.id) ?? 0,
+                ),
             0,
         )
 
