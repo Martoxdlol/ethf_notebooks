@@ -1,8 +1,7 @@
 import { XIcon } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useHardware } from '@/lib/hooks'
-import { cn } from '@/lib/utils'
 import type { Hardware } from '@/server/inventory'
 import useDivSize from './use-div-size'
 import { useKeyboardInputEvents } from './use-keyboard-checkout'
@@ -26,7 +25,7 @@ export function CheckoutScreenKeyboard() {
 
     const overlayRef = useRef<HTMLDivElement>(null)
 
-    const { activeMode, defaultInput, modeInputs } = useKeyboardInputEvents({
+    const { defaultInput } = useKeyboardInputEvents({
         onModeSubmit(mode, text) {
             console.log(mode, text)
         },
