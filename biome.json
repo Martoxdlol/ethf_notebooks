@@ -1,88 +1,39 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-    "files": {
-        "ignore": [
-            "**/.next",
-            "**/public",
-            "**/.turbo",
-            "**/typescript/*.json",
-            "**/tsconfig.json",
-            "**/database/drizzle/**/*.json",
-            "**/ui/src/components/ui/**/*.tsx",
-            "**/components/ui/**/*.tsx",
-            "**/nats.js"
-        ],
-        "include": ["**/*.js", "**/*.ts", "**/*.mts", "**/*.tsx", "**/*.json", "**/*.jsonc"]
-    },
-    "organizeImports": {
-        "enabled": true
-    },
-    "formatter": {
-        "indentWidth": 4,
-        "indentStyle": "space",
-        "lineWidth": 140,
-        "lineEnding": "lf"
-    },
-    "javascript": {
-        "formatter": {
-            "quoteStyle": "single",
-            "jsxQuoteStyle": "single",
-            "trailingCommas": "all",
-            "semicolons": "asNeeded",
-            "quoteProperties": "asNeeded"
-        }
-    },
+    "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
     "vcs": {
         "enabled": true,
         "clientKind": "git",
-        "defaultBranch": "main"
+        "useIgnoreFile": true
+    },
+    "files": {
+        "ignoreUnknown": false
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4
     },
     "linter": {
         "enabled": true,
         "rules": {
-            "all": true,
-            "a11y": {
-                "all": false
-            },
+            "recommended": true,
             "style": {
-                "noDefaultExport": "off",
-                "noNonNullAssertion": "off",
-                "useNamingConvention": "off",
-                "noNamespaceImport": "off"
-            },
-            "suspicious": {
-                "noArrayIndexKey": "off",
-                "useAwait": "off",
-                "noExportsInTest": "off",
-                "noConsoleLog": "error",
-                "noConsole": "off",
-                "noReactSpecificProps": "off"
-            },
-            "correctness": {
-                "useExhaustiveDependencies": "off",
-                "noUnusedVariables": "warn",
-                "noUndeclaredVariables": "off",
-                "noNodejsModules": "off",
-                "useImportExtensions": "off"
-            },
-            "complexity": {
-                "noUselessTernary": "error",
-                "noVoid": "off",
-                "noExcessiveCognitiveComplexity": "off",
-                "useSimplifiedLogicExpression": "off"
-            },
-            "performance": {
-                "noReExportAll": "off",
-                "noBarrelFile": "off"
-            },
-            "nursery": {
-                "useSortedClasses": {
-                    "level": "error",
-                    "options": {
-                        "attributes": ["classList"],
-                        "functions": ["clsx", "cva", "cn", "tw"]
-                    }
-                }
+                "noNonNullAssertion": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "semicolons": "asNeeded",
+            "jsxQuoteStyle": "single"
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": "on"
             }
         }
     }

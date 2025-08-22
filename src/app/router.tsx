@@ -1,9 +1,17 @@
-import { Layout } from '@/components/layout'
 import { useEffect } from 'react'
-import { BrowserRouter, Link, Outlet, Route, Routes, useNavigate } from 'react-router'
+import {
+    BrowserRouter,
+    Link,
+    Outlet,
+    Route,
+    Routes,
+    useNavigate,
+} from 'react-router'
+import { Layout } from '@/components/layout'
 import { useSession } from '../lib/auth-client'
 import { AvailabilityScreen } from './screens/availability'
 import { CheckoutScreen } from './screens/checkout'
+import { CheckoutScreenKeyboard } from './screens/checkout_keyboard'
 import { HomeScreen } from './screens/home'
 import { ListScreen } from './screens/list'
 import { LoginScreen } from './screens/login'
@@ -21,7 +29,10 @@ function Redirect(props: { path: string }) {
     return null
 }
 
-function RequiresAuth(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+function RequiresAuth(props: {
+    children: React.ReactNode
+    fallback: React.ReactNode
+}) {
     const session = useSession()
 
     if (session.error) {
@@ -39,7 +50,10 @@ function RequiresAuth(props: { children: React.ReactNode; fallback: React.ReactN
     return <Redirect path='/login' />
 }
 
-function RequiresNotAuth(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+function RequiresNotAuth(props: {
+    children: React.ReactNode
+    fallback: React.ReactNode
+}) {
     const session = useSession()
 
     if (session.error) {
@@ -63,7 +77,9 @@ export function AppRouter() {
             <Routes>
                 <Route
                     element={
-                        <RequiresAuth fallback={<Link to='/login'>Please login</Link>}>
+                        <RequiresAuth
+                            fallback={<Link to='/login'>Please login</Link>}
+                        >
                             <Layout>
                                 <Outlet />
                             </Layout>
@@ -72,11 +88,24 @@ export function AppRouter() {
                 >
                     <Route path='/' element={<HomeScreen />} />
                     <Route path='/checkout' element={<CheckoutScreen />} />
-                    <Route path='/reservas/nueva' element={<NewReservationScreen />} />
-                    <Route path='/reservas/:reservationId' element={<ReservationScreen />} />
+                    <Route
+                        path='/checkout_keyboard'
+                        element={<CheckoutScreenKeyboard />}
+                    />
+                    <Route
+                        path='/reservas/nueva'
+                        element={<NewReservationScreen />}
+                    />
+                    <Route
+                        path='/reservas/:reservationId'
+                        element={<ReservationScreen />}
+                    />
                     <Route path='/opciones' element={<OptionsScreen />} />
                     <Route path='/lista' element={<ListScreen />} />
-                    <Route path='/disponibilidad' element={<AvailabilityScreen />} />
+                    <Route
+                        path='/disponibilidad'
+                        element={<AvailabilityScreen />}
+                    />
                     <Route
                         path='*'
                         element={
@@ -88,7 +117,9 @@ export function AppRouter() {
                 </Route>
                 <Route
                     element={
-                        <RequiresNotAuth fallback={<Link to='/'>Please logout</Link>}>
+                        <RequiresNotAuth
+                            fallback={<Link to='/'>Please logout</Link>}
+                        >
                             <Outlet />
                         </RequiresNotAuth>
                     }
