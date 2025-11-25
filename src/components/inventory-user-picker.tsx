@@ -49,7 +49,7 @@ export function InventoryUserPicker(props: {
             }
             onValueChange={(v) => props.onChange(Number.parseInt(v, 10))}
         >
-            <SelectTrigger>
+            <SelectTrigger className='w-full'>
                 <SelectValue placeholder='Seleccionar usuario...' />
             </SelectTrigger>
             <SelectContent>

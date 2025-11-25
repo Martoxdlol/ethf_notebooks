@@ -46,7 +46,7 @@ export function ReservationPicker(props: {
 
     return (
         <Select value={props.value} onValueChange={(v) => props.onChange(v)}>
-            <SelectTrigger>
+            <SelectTrigger className='w-full'>
                 <SelectValue placeholder='Buscar reserva' />
             </SelectTrigger>
             <SelectContent>

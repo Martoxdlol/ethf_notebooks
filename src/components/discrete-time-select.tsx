@@ -42,7 +42,7 @@ export function DiscreteTimeSelect(props: {
             onValueChange={(value) => props.onChange(value)}
             required={true}
         >
-            <SelectTrigger>
+            <SelectTrigger className='w-full'>
                 <SelectValue placeholder={props.placeholder} />
             </SelectTrigger>
             <SelectContent>
