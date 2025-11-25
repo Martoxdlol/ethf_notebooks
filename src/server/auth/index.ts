@@ -9,6 +9,12 @@ export function createAuth(opts?: { db: DBType }) {
         database: drizzleAdapter(opts?.db ?? createDatabase(), {
             provider: 'pg',
         }),
+        account: {
+            accountLinking: {
+                enabled: true,
+                trustedProviders: ['microsoft'],
+            },
+        },
         socialProviders: {
             microsoft: {
                 clientId: process.env.MICROSOFT_CLIENT_ID!,
